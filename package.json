@@ -1,0 +1,35 @@
+{
+  "name": "@carry0987/imgcheckbox",
+  "version": "1.0.0",
+  "description": "A library for create checkable img tags",
+  "type": "module",
+  "main": "dist/imgCheckBox.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "rollup --config rollup.config.js",
+    "build": "rollup --config rollup.config.js --environment BUILD:production"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carry0987/ImgCheckBox-JS.git"
+  },
+  "keywords": [
+    "checkbox",
+    "imgcheckbox"
+  ],
+  "author": "carry0987",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/carry0987/ImgCheckBox-JS/issues"
+  },
+  "homepage": "https://github.com/carry0987/ImgCheckBox-JS#readme",
+  "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.0.2",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}
