@@ -1,6 +1,6 @@
 {
   "name": "@carry0987/imgcheckbox",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A library for create checkable img tags",
   "type": "module",
   "main": "dist/imgCheckBox.min.js",

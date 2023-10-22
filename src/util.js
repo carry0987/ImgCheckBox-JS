@@ -50,6 +50,7 @@ const Util = {
     buildRules(ruleObject) {
         let ruleSet = '';
         for (let [property, value] of Object.entries(ruleObject)) {
+            property = property.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
             ruleSet += `${property}:${value};`;
         }
         return ruleSet;
