@@ -1,4 +1,4 @@
-import Util from './util';
+import Utils from './utils-ext';
 import throwError from './error';
 import reportInfo from './report';
 
@@ -126,14 +126,14 @@ class ImgCheckBox {
      * Initialization
      */
     init(element, option) {
-        let elem = Util.getElem(element, 'all');
+        let elem = Utils.getElem(element, 'all');
         if (!elem || elem.length === 0) throwError('Element not found');
         if (!option) throwError('Option not found');
         ImgCheckBox.CHECK_MARK = option.checkMark || ImgCheckBox.CHECK_MARK;
         this.element = elem;
         this.targetElement = element;
         // Replace default options with user defined options
-        this.options = Util.deepMerge({}, ImgCheckBox.defaults, option);
+        this.options = Utils.deepMerge({}, ImgCheckBox.defaults, option);
         if (this.options?.onLoad) {
             this.options.onLoad();
         }
@@ -149,7 +149,7 @@ class ImgCheckBox {
         let lastClicked;
         let wrapperElement = [],
             finalStyles = {},
-            grayscaleStyles = Util.buildStyles('img', ImgCheckBox.CHECK_MARK, {
+            grayscaleStyles = Utils.buildStyles('img', ImgCheckBox.CHECK_MARK, {
                 'transform': 'scale(1)',
                 'filter': 'none',
                 '-webkit-filter': 'grayscale(0)'
@@ -157,17 +157,17 @@ class ImgCheckBox {
                 'filter': 'grayscale(1)',
                 '-webkit-filter': 'grayscale(1)'
             }),
-            scaleStyles = Util.buildStyles('img', ImgCheckBox.CHECK_MARK, {
+            scaleStyles = Utils.buildStyles('img', ImgCheckBox.CHECK_MARK, {
                 'transform': 'scale(1)'
             }, {
                 'transform': 'scale(0.9)'
             }),
-            scaleCheckMarkStyles = Util.buildStyles('::before', ImgCheckBox.CHECK_MARK, {
+            scaleCheckMarkStyles = Utils.buildStyles('::before', ImgCheckBox.CHECK_MARK, {
                 'transform': 'scale(0)'
             }, {
                 'transform': 'scale(1)'
             }),
-            fadeCheckMarkStyles = Util.buildStyles('::before', ImgCheckBox.CHECK_MARK, {
+            fadeCheckMarkStyles = Utils.buildStyles('::before', ImgCheckBox.CHECK_MARK, {
                 'opacity': '0'
             }, {
                 'opacity': '1'
@@ -176,22 +176,22 @@ class ImgCheckBox {
         /* *** STYLESHEET STUFF *** */
         // Shove in the custom check mark
         if (options.checkMarkImage !== false) {
-            Util.deepMerge(finalStyles, { 'span.imgCheckbox::before': { 'background-image': 'url(\'' + options.checkMarkImage + '\')' } });
+            Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': { 'background-image': 'url(\'' + options.checkMarkImage + '\')' } });
         }
         // Give the checkmark dimensions
         let chkDimensions = options.checkMarkSize.split(' ');
-        Util.deepMerge(finalStyles, {
+        Utils.deepMerge(finalStyles, {
             'span.imgCheckbox::before': {
                 'width': chkDimensions[0],
                 'height': chkDimensions[chkDimensions.length - 1]
             }
         });
         // Give the checkmark a position
-        Util.deepMerge(finalStyles, { 'span.imgCheckbox::before': ImgCheckBox.CHECKMARK_POSITION[options.checkMarkPosition] });
+        Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': ImgCheckBox.CHECKMARK_POSITION[options.checkMarkPosition] });
         // Fixed image sizes
         if (options.fixedImageSize) {
             let imgDimensions = options.fixedImageSize.split(' ');
-            Util.deepMerge(finalStyles, {
+            Utils.deepMerge(finalStyles, {
                 'span.imgCheckbox img': {
                     'width': imgDimensions[0],
                     'height': imgDimensions[imgDimensions.length - 1]
@@ -219,18 +219,18 @@ class ImgCheckBox {
         ];
         conditionalExtend.forEach(function(extension) {
             if (extension.doExtension) {
-                Util.deepMerge(finalStyles, extension.style);
+                Utils.deepMerge(finalStyles, extension.style);
             }
         });
 
-        Util.deepMerge(ImgCheckBox.defaultStyles, Util.buildStyles('', ImgCheckBox.CHECK_MARK, {
+        Utils.deepMerge(ImgCheckBox.defaultStyles, Utils.buildStyles('', ImgCheckBox.CHECK_MARK, {
             '': {'border-color': '#ccc'},
             'img': {},
             '::before': {}
         }));
-        finalStyles = Util.deepMerge({}, ImgCheckBox.defaultStyles, finalStyles, options.styles);
+        finalStyles = Utils.deepMerge({}, ImgCheckBox.defaultStyles, finalStyles, options.styles);
         // Now that we've built up our styles, inject them
-        Util.injectStylesheet(finalStyles, id);
+        Utils.injectStylesheet(finalStyles, id);
 
         // Loop through each element
         for (let index = 0; index < elements.length; index++) {
@@ -254,20 +254,20 @@ class ImgCheckBox {
 
             // Set up select/deselect functions
             wrapper.imgChkDeselect = () => {
-                Util.changeSelection(wrapper, ImgCheckBox.CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
+                Utils.changeSelection(wrapper, ImgCheckBox.CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
                 options.onDeselect?.(wrapper);
             }
             wrapper.imgChkSelect = () => {
-                Util.changeSelection(wrapper, ImgCheckBox.CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
+                Utils.changeSelection(wrapper, ImgCheckBox.CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
                 options.onSelect?.(wrapper);
             }
 
             wrapper.firstChild.imgChkDeselect = () => {
-                Util.changeSelection(wrapper, ImgCheckBox.CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
+                Utils.changeSelection(wrapper, ImgCheckBox.CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
                 options.onDeselect?.(wrapper);
             }
             wrapper.firstChild.imgChkSelect = () => {
-                Util.changeSelection(wrapper, ImgCheckBox.CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
+                Utils.changeSelection(wrapper, ImgCheckBox.CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
                 options.onSelect?.(wrapper);
             }
 
@@ -321,7 +321,7 @@ class ImgCheckBox {
                         }
                     }
                 } else {
-                    const isSelected = Util.changeSelection(el, ImgCheckBox.CHK_TOGGLE, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
+                    const isSelected = Utils.changeSelection(el, ImgCheckBox.CHK_TOGGLE, options.addToForm, options.radio, options.canDeselect, wrapperElement, ImgCheckBox.constants);
                     options.onClick && options.onClick(el, isSelected);
                     isSelected ? options.onSelect?.(el) : options.onDeselect?.(el);
                 }
@@ -346,7 +346,7 @@ class ImgCheckBox {
     }
 
     state() {
-        const element = Util.getElem(this.element[this.targetIndex]);
+        const element = Utils.getElem(this.element[this.targetIndex]);
         return element.parentNode.classList.contains(ImgCheckBox.CHECK_MARK) ? true : false;
     }
 
@@ -388,7 +388,7 @@ class ImgCheckBox {
         let elements = this.element;
         let id = ImgCheckBox.instance.indexOf(this);
         if (id < 0) return throwError('ImgCheckBox instance not found');
-        Util.removeStylesheet(id);
+        Utils.removeStylesheet(id);
         for (let index = 0; index < elements.length; index++) {
             let element = elements[index];
             if (element.parentNode.classList.contains('imgCheckbox' + id)) {
