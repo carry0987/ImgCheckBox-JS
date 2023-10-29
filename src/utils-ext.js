@@ -3,7 +3,6 @@ import Utils from '@carry0987/utils';
 Utils.setStylesheetId = 'imgCheckbox-style';
 Utils.setReplaceRule('.imgCheckbox', '.imgCheckbox');
 
-
 Utils.changeSelection = function(chosenElement, howToModify, addToForm, radio, canDeselect, wrapperElements, constants) {
     const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
     const isSelected = chosenElement.classList.contains(CHECK_MARK);
