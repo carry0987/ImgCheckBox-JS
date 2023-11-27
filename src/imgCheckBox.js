@@ -1,5 +1,4 @@
 import Utils from './utils-ext';
-import throwError from './error';
 import reportInfo from './report';
 
 class ImgCheckBox {
@@ -127,8 +126,8 @@ class ImgCheckBox {
      */
     init(element, option) {
         let elem = Utils.getElem(element, 'all');
-        if (!elem || elem.length === 0) throwError('Element not found');
-        if (!option) throwError('Option not found');
+        if (!elem || elem.length === 0) Utils.throwError('Element not found');
+        if (!option) Utils.throwError('Option not found');
         ImgCheckBox.CHECK_MARK = option.checkMark || ImgCheckBox.CHECK_MARK;
         this.element = elem;
         this.targetElement = element;
@@ -341,7 +340,7 @@ class ImgCheckBox {
             this.targetIndex = index;
             return this;
         } else {
-            return throwError('The given index is out of range.');
+            return Utils.throwError('The given index is out of range.');
         } 
     }
 
@@ -352,7 +351,7 @@ class ImgCheckBox {
 
     select(index) {
         if (index < 0 || index >= this.element.length) {
-            return throwError('The given index is out of range.');
+            return Utils.throwError('The given index is out of range.');
         }
         if (this.element[index].imgChkSelect) {
             this.element[index].imgChkSelect();
@@ -361,7 +360,7 @@ class ImgCheckBox {
 
     deselect(index) {
         if (index < 0 || index >= this.element.length) {
-            return throwError('The given index is out of range.');
+            return Utils.throwError('The given index is out of range.');
         }
         if (this.element[index].imgChkDeselect) {
             this.element[index].imgChkDeselect();
@@ -387,7 +386,7 @@ class ImgCheckBox {
     destroy() {
         let elements = this.element;
         let id = ImgCheckBox.instance.indexOf(this);
-        if (id < 0) return throwError('ImgCheckBox instance not found');
+        if (id < 0) return Utils.throwError('ImgCheckBox instance not found');
         Utils.removeStylesheet(id);
         for (let index = 0; index < elements.length; index++) {
             let element = elements[index];
