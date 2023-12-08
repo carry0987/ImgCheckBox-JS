@@ -29,15 +29,17 @@
     </div>
     <script src="dist/imgCheckBox.min.js"></script>
     <script type="text/javascript">
-    const imgCheckBox = new ImgCheckBox('#imgList img', {
-        graySelected: false,
-        scaleSelected: true,
-        checkMarkPosition: 'center',
-        checkMarkSize: '50px',
-        styles: {
-            'span.imgCheckbox img': { 'border-radius': '0px' },
-            '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
-        },
+    document.addEventListener('DOMContentLoaded', () => {
+        const imgCheckBox = new ImgCheckBox('#imgList img', {
+            graySelected: false,
+            scaleSelected: true,
+            checkMarkPosition: 'center',
+            checkMarkSize: '50px',
+            styles: {
+                'span.imgCheckbox img': { 'border-radius': '0px' },
+                '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
+            },
+        });
     });
     </script>
 </body>
