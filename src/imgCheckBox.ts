@@ -147,8 +147,6 @@ class ImgCheckBox {
             if ((element.parentNode as Element)?.classList.contains('imgCheckbox' + id)) continue;
             // If the element is not an image, skip it
             if (element.tagName.toLowerCase() !== 'img') continue;
-            // If the element is not visible, skip it
-            if (element.offsetWidth === 0 && element.offsetHeight === 0) continue;
 
             // Set img undraggable
             element.ondragstart = () => false;

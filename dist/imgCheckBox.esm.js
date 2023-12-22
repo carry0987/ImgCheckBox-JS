@@ -381,7 +381,7 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.0.0';
+    static version = '2.0.1';
     element;
     options;
     targetElement;
@@ -507,9 +507,6 @@ class ImgCheckBox {
                 continue;
             // If the element is not an image, skip it
             if (element.tagName.toLowerCase() !== 'img')
-                continue;
-            // If the element is not visible, skip it
-            if (element.offsetWidth === 0 && element.offsetHeight === 0)
                 continue;
             // Set img undraggable
             element.ondragstart = () => false;
