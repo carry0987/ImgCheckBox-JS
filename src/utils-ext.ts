@@ -8,16 +8,7 @@ import {
     domUtils as _domUtils
 } from '@carry0987/utils';
 
-interface ConstantsType {
-    CHECK_MARK: string;
-    CHK_DESELECT: number;
-    CHK_TOGGLE: number;
-    CHK_SELECT: number;
-}
-
-interface StylesObject {
-    [selector: string]: string | number;
-}
+import { ConstantsType, StylesObject, ChangeEventDetail } from './interface/interfaces';
 
 class Utils {
     static throwError = _errorUtils.throwError;
@@ -49,7 +40,7 @@ class Utils {
         }
         const currentIsSelected = chosenElement.classList.contains(CHECK_MARK);
         if (isSelected !== currentIsSelected) {
-            const event = new CustomEvent('change', {
+            const event = new CustomEvent<ChangeEventDetail>('change', {
                 detail: {
                     isSelected: currentIsSelected
                 }
@@ -95,7 +86,7 @@ class Utils {
         baseSelector: string,
         checkedSelector: string,
         baseStyle: StylesObject,
-        checkedStyle: StylesObject
+        checkedStyle?: StylesObject
     ): Record<string, StylesObject> {
         let styles: Record<string, StylesObject> = {};
         const arrayBuilder = (
@@ -105,15 +96,17 @@ class Utils {
         ): void => {
             let space = selector.startsWith('::') ? '' : ' ';
             if (!selector) space = '.' + checkedSelector;
-            styles[
-                `span.imgCheckbox${
-                    checked ? '.' + checkedSelector : ''
-                }${space}${selector}`
-            ] = styleValues;
+            styles[`span.imgCheckbox${checked ? '.' + checkedSelector : ''}${space}${selector}`] = styleValues;
         };
 
-        arrayBuilder(baseSelector, baseStyle);
-        arrayBuilder(baseSelector, checkedStyle, true);
+        if (typeof baseStyle === 'object' && typeof checkedStyle === 'object') {
+            arrayBuilder(baseSelector, baseStyle);
+            arrayBuilder(baseSelector, checkedStyle, true);
+        } else {
+            for (let [selector, value] of Object.entries(baseStyle)) {
+                arrayBuilder(selector, value as StylesObject, !!selector);
+            }
+        }
 
         return styles;
     }
