@@ -39,6 +39,10 @@
                 'span.imgCheckbox img': { 'border-radius': '0px' },
                 '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
             },
+            preselect: [0, 2],
+            onChange: (el, checked) => {
+                console.log(el);
+            }
         });
     });
     </script>

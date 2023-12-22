@@ -1,20 +1,30 @@
+import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
+import { dts } from 'rollup-plugin-dts';
+import del from 'rollup-plugin-delete';
 import { createRequire } from 'module';
 const pkg = createRequire(import.meta.url)('./package.json');
 
-export default {
-    input: 'src/imgCheckBox.js',
+const isProduction = process.env.BUILD === 'production';
+
+const jsConfig = {
+    input: 'src/imgCheckBox.ts',
     output: [
         {
             file: pkg.main,
             format: 'umd',
             name: 'ImgCheckBox',
-            plugins: [terser()],
+            plugins: isProduction ? [terser()] : []
+        },
+        {
+            file: pkg.module,
+            format: 'es'
         }
     ],
     plugins: [
+        typescript(),
         resolve(),
         replace({
             preventAssignment: true,
@@ -22,3 +32,17 @@ export default {
         })
     ]
 };
+
+const dtsConfig = {
+    input: 'dist/imgCheckBox.d.ts',
+    output: {
+        file: pkg.types,
+        format: 'es'
+    },
+    plugins: [
+        dts(),
+        del({ hook: 'buildEnd', targets: ['!dist/index.js', 'dist/*.d.ts', 'dist/interface'] })
+    ]
+};
+
+export default [jsConfig, dtsConfig];

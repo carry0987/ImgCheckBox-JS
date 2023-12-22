@@ -1,7 +1,7 @@
-let reportInfo = function(vars, showType = false) {
+const reportInfo = (vars: any, showType: boolean | string = false): void => {
     if (showType === true) {
         console.log('Data Type : ' + typeof vars, '\nValue : ' + vars);
-    } else if(typeof showType !== 'boolean') {
+    } else if (typeof showType !== 'boolean') {
         console.log(showType);
     } else {
         console.log(vars);

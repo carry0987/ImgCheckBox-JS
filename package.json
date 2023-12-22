@@ -1,9 +1,11 @@
 {
   "name": "@carry0987/imgcheckbox",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A library for create checkable img tags",
   "type": "module",
   "main": "dist/imgCheckBox.min.js",
+  "module": "dist/imgCheckBox.esm.js",
+  "types": "dist/imgCheckBox.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "rollup --config rollup.config.js",
@@ -28,9 +30,16 @@
   "homepage": "https://github.com/carry0987/ImgCheckBox-JS#readme",
   "devDependencies": {
     "@carry0987/utils": "^3.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-replace": "^5.0.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.6.0"
+    "@rollup/plugin-typescript": "^11.1.5",
+    "rollup": "^4.0.2",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3"
   }
 }
