@@ -14,7 +14,6 @@ class ImgCheckBox {
     private static version: string = '__version__';
     private element!: HTMLElementWithSelection[];
     private options!: ImgCheckBoxOptions;
-    private targetElement!: string | Element;
     private targetIndex: number = 0;
     private imgChkMethods = new Map<HTMLElement, { deselect: () => void; select: () => void }>();
 
@@ -35,7 +34,6 @@ class ImgCheckBox {
         if (!elems) Utils.throwError('Element not found');
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElementWithSelection[];
         if (this.element.length === 0) Utils.throwError('Element not found');
-        this.targetElement = element;
         // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option);
         // Call the onLoad callback if provided
