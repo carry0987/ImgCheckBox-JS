@@ -65,7 +65,7 @@ export const defaults: ImgCheckBoxOptions = {
     checkMarkPosition: 'top-left',
     scaleCheckMark: true,
     fadeCheckMark: false,
-    addToForm: true,
+    addToForm: false,
     preselect: [],
     radio: false,
     canDeselect: false,
