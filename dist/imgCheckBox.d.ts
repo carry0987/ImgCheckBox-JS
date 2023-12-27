@@ -49,6 +49,14 @@ declare class ImgCheckBox {
     private options;
     private targetIndex;
     private imgChkMethods;
+    static readonly EVENT_CLICK = "click";
+    static readonly EVENT_CHANGE = "change";
+    static readonly EVENT_SELECT = "select";
+    static readonly EVENT_DESELECT = "deselect";
+    private _onClick;
+    private _onChange;
+    private _onSelect;
+    private _onDeselect;
     constructor(element: string | Element, option?: ImgCheckBoxOptions);
     /**
      * Initialization
@@ -58,6 +66,7 @@ declare class ImgCheckBox {
      * Main function for creating the imgCheckbox
      */
     private createImgCheckbox;
+    private triggerEvent;
     target(index: number): ImgCheckBox | void;
     state(): boolean;
     select(index: number): void;
@@ -67,6 +76,10 @@ declare class ImgCheckBox {
     destroy(): void;
     getChecked(): HTMLElementWithSelection[];
     getUnchecked(): HTMLElementWithSelection[];
+    set onClick(callback: (element: HTMLElementWithSelection) => void);
+    set onChange(callback: (element: HTMLElementWithSelection, isSelected: boolean) => void);
+    set onSelect(callback: (element: HTMLElementWithSelection) => void);
+    set onDeselect(callback: (element: HTMLElementWithSelection) => void);
     get length(): number;
     static get constants(): ConstantsType;
 }

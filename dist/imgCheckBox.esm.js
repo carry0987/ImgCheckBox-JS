@@ -382,11 +382,21 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.0.2';
+    static version = '2.1.0';
     element;
     options;
     targetIndex = 0;
     imgChkMethods = new Map();
+    // Constants for Event Types
+    static EVENT_CLICK = 'click';
+    static EVENT_CHANGE = 'change';
+    static EVENT_SELECT = 'select';
+    static EVENT_DESELECT = 'deselect';
+    // Methods for external use
+    _onClick = null;
+    _onChange = null;
+    _onSelect = null;
+    _onDeselect = null;
     constructor(element, option = {}) {
         this.init(element, option);
         ImgCheckBox.instances.push(this);
@@ -406,6 +416,11 @@ class ImgCheckBox {
             Utils.throwError('Element not found');
         // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option);
+        // Set event handlers' callback if provided
+        this._onClick = option.onClick || null;
+        this._onChange = option.onChange || null;
+        this._onSelect = option.onSelect || null;
+        this._onDeselect = option.onDeselect || null;
         // Call the onLoad callback if provided
         this.options?.onLoad?.();
         this.createImgCheckbox(ImgCheckBox.instances.length);
@@ -519,11 +534,11 @@ class ImgCheckBox {
             const methods = {
                 deselect: () => {
                     Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
-                    options.onDeselect?.(wrapper);
+                    this.triggerEvent(ImgCheckBox.EVENT_DESELECT, wrapper);
                 },
                 select: () => {
                     Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
-                    options.onSelect?.(wrapper);
+                    this.triggerEvent(ImgCheckBox.EVENT_SELECT, wrapper);
                 }
             };
             this.imgChkMethods.set(wrapper, methods);
@@ -589,24 +604,47 @@ class ImgCheckBox {
                         if (!currentEl.classList.contains(CHECK_MARK)) {
                             const selectMethod = this.imgChkMethods.get(currentEl)?.select;
                             selectMethod?.();
-                            options.onClick && options.onClick(currentEl, true);
-                            options.onChange && options.onChange(currentEl, true);
+                            this.triggerEvent(ImgCheckBox.EVENT_CLICK, currentEl, true);
+                            this.triggerEvent(ImgCheckBox.EVENT_CHANGE, currentEl, true);
                         }
                     }
                 }
                 else {
                     const isSelected = Utils.changeSelection(el, CHK_TOGGLE, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
-                    options.onClick && options.onClick(el, isSelected);
-                    isSelected ? options.onSelect?.(el) : options.onDeselect?.(el);
+                    this.triggerEvent(ImgCheckBox.EVENT_CLICK, el, isSelected);
+                    isSelected ? this.triggerEvent(ImgCheckBox.EVENT_SELECT, el) : this.triggerEvent(ImgCheckBox.EVENT_DESELECT, el);
                 }
                 lastClicked = el;
             });
             el.addEventListener('change', (e) => {
                 const customEvent = e;
-                options.onChange && options.onChange(el, customEvent.detail.isSelected);
+                this.triggerEvent(ImgCheckBox.EVENT_CHANGE, el, customEvent.detail.isSelected);
             });
         });
         return this;
+    }
+    // Trigger event
+    triggerEvent(eventType, element, isSelected) {
+        switch (eventType) {
+            case ImgCheckBox.EVENT_CLICK:
+                if (isSelected !== undefined) {
+                    this._onClick?.(element, isSelected);
+                }
+                break;
+            case ImgCheckBox.EVENT_CHANGE:
+                if (isSelected !== undefined) {
+                    this._onChange?.(element, isSelected);
+                }
+                break;
+            case ImgCheckBox.EVENT_SELECT:
+                this._onSelect?.(element);
+                break;
+            case ImgCheckBox.EVENT_DESELECT:
+                this._onDeselect?.(element);
+                break;
+            default:
+                Utils.throwError(`Unsupported event type: ${eventType}`);
+        }
     }
     target(index) {
         if (index >= 0 && index < this.element.length) {
@@ -663,6 +701,19 @@ class ImgCheckBox {
     }
     getUnchecked() {
         return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
+    }
+    // Methods for external use
+    set onClick(callback) {
+        this._onClick = callback;
+    }
+    set onChange(callback) {
+        this._onChange = callback;
+    }
+    set onSelect(callback) {
+        this._onSelect = callback;
+    }
+    set onDeselect(callback) {
+        this._onDeselect = callback;
     }
     get length() {
         return this.element.length;

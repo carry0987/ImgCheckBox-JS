@@ -17,6 +17,18 @@ class ImgCheckBox {
     private targetIndex: number = 0;
     private imgChkMethods = new Map<HTMLElement, { deselect: () => void; select: () => void }>();
 
+    // Constants for Event Types
+    static readonly EVENT_CLICK = 'click';
+    static readonly EVENT_CHANGE = 'change';
+    static readonly EVENT_SELECT = 'select';
+    static readonly EVENT_DESELECT = 'deselect';
+
+    // Methods for external use
+    private _onClick: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
+    private _onChange: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
+    private _onSelect: ((element: HTMLElementWithSelection) => void) | null = null;
+    private _onDeselect: ((element: HTMLElementWithSelection) => void) | null = null;
+
     constructor(element: string | Element, option: ImgCheckBoxOptions = {}) {
         this.init(element, option);
         ImgCheckBox.instances.push(this);
@@ -36,6 +48,11 @@ class ImgCheckBox {
         if (this.element.length === 0) Utils.throwError('Element not found');
         // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option);
+        // Set event handlers' callback if provided
+        this._onClick = option.onClick || null;
+        this._onChange = option.onChange || null;
+        this._onSelect = option.onSelect || null;
+        this._onDeselect = option.onDeselect || null;
         // Call the onLoad callback if provided
         this.options?.onLoad?.();
         this.createImgCheckbox(ImgCheckBox.instances.length);
@@ -160,11 +177,11 @@ class ImgCheckBox {
             const methods = {
                 deselect: () => {
                     Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
-                    options.onDeselect?.(wrapper);
+                    this.triggerEvent(ImgCheckBox.EVENT_DESELECT, wrapper);
                 },
                 select: () => {
                     Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
-                    options.onSelect?.(wrapper);
+                    this.triggerEvent(ImgCheckBox.EVENT_SELECT, wrapper);
                 }
             };
             this.imgChkMethods.set(wrapper, methods);
@@ -229,24 +246,48 @@ class ImgCheckBox {
                         if (!currentEl.classList.contains(CHECK_MARK)) {
                             const selectMethod = this.imgChkMethods.get(currentEl)?.select;
                             selectMethod?.();
-                            options.onClick && options.onClick(currentEl, true);
-                            options.onChange && options.onChange(currentEl, true);
+                            this.triggerEvent(ImgCheckBox.EVENT_CLICK, currentEl, true);
+                            this.triggerEvent(ImgCheckBox.EVENT_CHANGE, currentEl, true);
                         }
                     }
                 } else {
                     const isSelected = Utils.changeSelection(el, CHK_TOGGLE, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
-                    options.onClick && options.onClick(el, isSelected);
-                    isSelected ? options.onSelect?.(el) : options.onDeselect?.(el);
+                    this.triggerEvent(ImgCheckBox.EVENT_CLICK, el, isSelected);
+                    isSelected ? this.triggerEvent(ImgCheckBox.EVENT_SELECT, el) : this.triggerEvent(ImgCheckBox.EVENT_DESELECT, el);
                 }
                 lastClicked = el;
             });
             el.addEventListener('change', (e: Event) => {
                 const customEvent = e as CustomEvent<ChangeEventDetail>;
-                options.onChange && options.onChange(el, customEvent.detail.isSelected);
+                this.triggerEvent(ImgCheckBox.EVENT_CHANGE, el, customEvent.detail.isSelected);
             });
         });
 
         return this;
+    }
+
+    // Trigger event
+    private triggerEvent(eventType: string, element: HTMLElementWithSelection, isSelected?: boolean) {
+        switch (eventType) {
+            case ImgCheckBox.EVENT_CLICK:
+                if (isSelected !== undefined) {
+                    this._onClick?.(element, isSelected);
+                }
+                break;
+            case ImgCheckBox.EVENT_CHANGE:
+                if (isSelected !== undefined) {
+                    this._onChange?.(element, isSelected);
+                }
+                break;
+            case ImgCheckBox.EVENT_SELECT:
+                this._onSelect?.(element);
+                break;
+            case ImgCheckBox.EVENT_DESELECT:
+                this._onDeselect?.(element);
+                break;
+            default:
+                Utils.throwError(`Unsupported event type: ${eventType}`);
+        }
     }
 
     target(index: number): ImgCheckBox | void {
@@ -311,6 +352,23 @@ class ImgCheckBox {
 
     getUnchecked(): HTMLElementWithSelection[] {
         return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
+    }
+
+    // Methods for external use
+    set onClick(callback: (element: HTMLElementWithSelection) => void) {
+        this._onClick = callback;
+    }
+
+    set onChange(callback: (element: HTMLElementWithSelection, isSelected: boolean) => void) {
+        this._onChange = callback;
+    }
+
+    set onSelect(callback: (element: HTMLElementWithSelection) => void) {
+        this._onSelect = callback;
+    }
+
+    set onDeselect(callback: (element: HTMLElementWithSelection) => void) {
+        this._onDeselect = callback;
     }
 
     get length(): number {
