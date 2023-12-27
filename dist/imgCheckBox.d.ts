@@ -65,8 +65,8 @@ declare class ImgCheckBox {
     selectAll(): void;
     deselectAll(): void;
     destroy(): void;
+    get length(): number;
     static get constants(): ConstantsType;
-    static get length(): number;
 }
 
 export { ImgCheckBox as default };

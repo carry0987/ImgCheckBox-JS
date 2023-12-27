@@ -552,7 +552,6 @@ class ImgCheckBox {
                     inputElem.name = imgName;
                     inputElem.className = hiddenElementId;
                     inputElem.style.display = 'none';
-                    inputElem.checked = wrapper.classList.contains(CHECK_MARK);
                     inputElem.value = inputElemValue;
                     formElement.appendChild(inputElem);
                 }
@@ -565,12 +564,16 @@ class ImgCheckBox {
         if (Array.isArray(this.options.preselect)) {
             this.options.preselect.forEach((index) => {
                 if (index >= 0 && index < wrapperElements.length) {
-                    wrapperElements[index].classList.add(CHECK_MARK);
+                    const selectMethod = this.imgChkMethods.get(wrapperElements[index])?.select;
+                    selectMethod?.();
                 }
             });
         }
         else if (this.options.preselect === true) {
-            wrapperElements.forEach(el => el.classList.add(CHECK_MARK));
+            wrapperElements.forEach(el => {
+                const selectMethod = this.imgChkMethods.get(el)?.select;
+                selectMethod?.();
+            });
         }
         // Set up event handler
         wrapperElements.forEach((el) => {
@@ -584,7 +587,8 @@ class ImgCheckBox {
                     for (let between = lastIdx; between <= thisIdx; between++) {
                         const currentEl = wrapperElements[between];
                         if (!currentEl.classList.contains(CHECK_MARK)) {
-                            currentEl.classList.add(CHECK_MARK);
+                            const selectMethod = this.imgChkMethods.get(currentEl)?.select;
+                            selectMethod?.();
                             options.onClick && options.onClick(currentEl, true);
                             options.onChange && options.onChange(currentEl, true);
                         }
@@ -654,6 +658,9 @@ class ImgCheckBox {
         });
         ImgCheckBox.instances.splice(id, 1);
     }
+    get length() {
+        return this.element.length;
+    }
     static get constants() {
         return {
             CHECK_MARK: CHECK_MARK,
@@ -661,9 +668,6 @@ class ImgCheckBox {
             CHK_TOGGLE: CHK_TOGGLE,
             CHK_SELECT: CHK_SELECT,
         };
-    }
-    static get length() {
-        return this.instances.length;
     }
 }
 
