@@ -10,6 +10,7 @@ interface ImgCheckBoxOptions {
     scaleCheckMark?: boolean;
     fadeCheckMark?: boolean;
     addToForm?: boolean | Element;
+    inputValueAttribute?: string | null;
     preselect?: boolean | number[];
     radio?: boolean;
     canDeselect?: boolean;
@@ -46,7 +47,6 @@ declare class ImgCheckBox {
     private static version;
     private element;
     private options;
-    private targetElement;
     private targetIndex;
     private imgChkMethods;
     constructor(element: string | Element, option?: ImgCheckBoxOptions);

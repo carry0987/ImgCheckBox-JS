@@ -178,11 +178,15 @@ class ImgCheckBox {
                 if (options.addToForm === true) {
                     formElement = element.closest('form');
                 } else {
-                    formElement = options.addToForm;
+                    formElement = options.addToForm as HTMLFormElement;
                 }
+                let inputElemValue = options.inputValueAttribute ? element.getAttribute(options.inputValueAttribute) || '' : '';
                 if (formElement) {
                     let hiddenElementId = 'hEI' + id + '-' + index;
-                    element.dataset.hiddenElementId = hiddenElementId;
+                    const parentElement = element.parentElement;
+                    if (parentElement && 'dataset' in parentElement) {
+                        parentElement.dataset.hiddenElementId = hiddenElementId;
+                    }
                     let imgName = (element as HTMLImageElement).getAttribute('name') || (element as HTMLImageElement).src.match(/\/([^\/]+)\.\w+$/)?.[1] || '';
                     let inputElem = document.createElement('input');
                     inputElem.type = 'checkbox';
@@ -190,6 +194,7 @@ class ImgCheckBox {
                     inputElem.className = hiddenElementId;
                     inputElem.style.display = 'none';
                     inputElem.checked = wrapper.classList.contains(CHECK_MARK);
+                    inputElem.value = inputElemValue;
                     formElement.appendChild(inputElem);
                 } else if (options.debugMessages) {
                     console.warn('ImgCheckBox: no form found (looks for form by default)');

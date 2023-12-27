@@ -12,6 +12,13 @@
         <div id="app">
             <h1 class="mb-3">ImgCheckBox</h1>
         </div>
+        <!--//Number of selected images//-->
+        <div class="d-flex flex-row justify-content-center align-items-center">
+            <div class="d-flex flex-column justify-content-center align-items-center">
+                <h4>Number of selected images:</h4>
+                <div id="selectedImages"></div>
+            </div>
+        </div>
         <div class="d-flex justify-content-center">
             <div id="imgList" class="d-flex flex-row justify-content-evenly">
                 <div class="image">
@@ -30,15 +37,15 @@
             <form id="imgCheckBoxForm">
                 <fieldset>
                     <legend>Form Test</legend>
-                    <div id="imgList" class="d-flex flex-row justify-content-evenly">
+                    <div class="d-flex flex-row justify-content-evenly">
                         <div class="image">
-                            <img src="img/meme-1.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
+                            <img name="images[]" data-id="1" src="img/meme-1.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
                         </div>
                         <div class="image mx-3">
-                            <img src="img/meme-2.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
+                            <img name="images[]" data-id="2" src="img/meme-2.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
                         </div>
                         <div class="image">
-                            <img src="img/meme-3.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
+                            <img name="images[]" data-id="3" src="img/meme-3.jpg" alt="image" class="img-fluid" style="max-width: 100px;">
                         </div>
                     </div>
                 </fieldset>
@@ -54,21 +61,41 @@
             scaleSelected: true,
             checkMarkPosition: 'center',
             checkMarkSize: '50px',
-            addToForm: true,
             styles: {
                 'span.imgCheckbox img': { 'border-radius': '0px' },
                 '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
             },
-            preselect: [0, 2],
             onChange: (el, checked) => {
                 console.log(el);
             }
         });
+        const imgCheckBoxForm = new ImgCheckBox('#imgCheckBoxForm img', {
+            graySelected: false,
+            scaleSelected: true,
+            checkMarkPosition: 'center',
+            checkMarkSize: '50px',
+            addToForm: true,
+            inputValueAttribute: 'data-id',
+            radio: false,
+            preselect: [0, 2],
+            styles: {
+                'span.imgCheckbox img': { 'border-radius': '0px' },
+                '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
+            }
+        });
         document.getElementById('imgCheckBoxForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('Form submitted');
-            // Print the values of the form
-            console.log(imgCheckBox.getValues());
+            // Create FormData from the form
+            const formData = new FormData(this);
+            
+            // Use Array.from() to convert the entries iterator to an array for easier logging
+            const formDataEntries = Array.from(formData.entries());
+            console.log('Form Data:', formDataEntries);
+            
+            // Now, pretty print each key-value pair
+            formDataEntries.forEach(([key, value]) => {
+                console.log(`${key}: ${value}`);
+            });
         });
     });
     </script>

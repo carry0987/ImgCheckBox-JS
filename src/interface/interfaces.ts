@@ -10,6 +10,7 @@ export interface ImgCheckBoxOptions {
     scaleCheckMark?: boolean;
     fadeCheckMark?: boolean;
     addToForm?: boolean | Element;
+    inputValueAttribute?: string | null;
     preselect?: boolean | number[];
     radio?: boolean;
     canDeselect?: boolean;

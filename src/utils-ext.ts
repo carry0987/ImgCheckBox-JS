@@ -66,7 +66,7 @@ class Utils {
             // Check if hiddenElements is null
             if (hiddenElements) {
                 hiddenElements.forEach((hiddenElement) => {
-                    // English: Check if hiddenElement is HTMLElement
+                    // Check if hiddenElement is HTMLElement
                     if (hiddenElement instanceof HTMLElement && hiddenElement.tagName.toLowerCase() === 'input') {
                         const inputElement = hiddenElement as HTMLInputElement; // Type assertion to HTMLInputElement
                         inputElement.checked = el.classList.contains(CHECK_MARK);

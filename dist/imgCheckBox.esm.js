@@ -220,7 +220,7 @@ class Utils {
             // Check if hiddenElements is null
             if (hiddenElements) {
                 hiddenElements.forEach((hiddenElement) => {
-                    // English: Check if hiddenElement is HTMLElement
+                    // Check if hiddenElement is HTMLElement
                     if (hiddenElement instanceof HTMLElement && hiddenElement.tagName.toLowerCase() === 'input') {
                         const inputElement = hiddenElement; // Type assertion to HTMLInputElement
                         inputElement.checked = el.classList.contains(CHECK_MARK);
@@ -335,7 +335,8 @@ const defaults = {
     checkMarkPosition: 'top-left',
     scaleCheckMark: true,
     fadeCheckMark: false,
-    addToForm: true,
+    addToForm: false,
+    inputValueAttribute: null,
     preselect: [],
     radio: false,
     canDeselect: false,
@@ -384,7 +385,6 @@ class ImgCheckBox {
     static version = '2.0.1';
     element;
     options;
-    targetElement;
     targetIndex = 0;
     imgChkMethods = new Map();
     constructor(element, option = {}) {
@@ -404,7 +404,6 @@ class ImgCheckBox {
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]);
         if (this.element.length === 0)
             Utils.throwError('Element not found');
-        this.targetElement = element;
         // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option);
         // Call the onLoad callback if provided
@@ -540,9 +539,13 @@ class ImgCheckBox {
                 else {
                     formElement = options.addToForm;
                 }
+                let inputElemValue = options.inputValueAttribute ? element.getAttribute(options.inputValueAttribute) || '' : '';
                 if (formElement) {
                     let hiddenElementId = 'hEI' + id + '-' + index;
-                    element.dataset.hiddenElementId = hiddenElementId;
+                    const parentElement = element.parentElement;
+                    if (parentElement && 'dataset' in parentElement) {
+                        parentElement.dataset.hiddenElementId = hiddenElementId;
+                    }
                     let imgName = element.getAttribute('name') || element.src.match(/\/([^\/]+)\.\w+$/)?.[1] || '';
                     let inputElem = document.createElement('input');
                     inputElem.type = 'checkbox';
@@ -550,6 +553,7 @@ class ImgCheckBox {
                     inputElem.className = hiddenElementId;
                     inputElem.style.display = 'none';
                     inputElem.checked = wrapper.classList.contains(CHECK_MARK);
+                    inputElem.value = inputElemValue;
                     formElement.appendChild(inputElem);
                 }
                 else if (options.debugMessages) {
