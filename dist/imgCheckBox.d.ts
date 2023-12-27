@@ -65,6 +65,8 @@ declare class ImgCheckBox {
     selectAll(): void;
     deselectAll(): void;
     destroy(): void;
+    getChecked(): HTMLElementWithSelection[];
+    getUnchecked(): HTMLElementWithSelection[];
     get length(): number;
     static get constants(): ConstantsType;
 }

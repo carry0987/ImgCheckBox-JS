@@ -382,7 +382,7 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.0.1';
+    static version = '2.0.2';
     element;
     options;
     targetIndex = 0;
@@ -657,6 +657,12 @@ class ImgCheckBox {
             }
         });
         ImgCheckBox.instances.splice(id, 1);
+    }
+    getChecked() {
+        return this.element.filter(el => el.parentElement?.classList.contains(CHECK_MARK));
+    }
+    getUnchecked() {
+        return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
     }
     get length() {
         return this.element.length;

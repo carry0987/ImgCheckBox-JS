@@ -305,6 +305,14 @@ class ImgCheckBox {
         ImgCheckBox.instances.splice(id, 1);
     }
 
+    getChecked(): HTMLElementWithSelection[] {
+        return this.element.filter(el => el.parentElement?.classList.contains(CHECK_MARK));
+    }
+
+    getUnchecked(): HTMLElementWithSelection[] {
+        return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
+    }
+
     get length(): number {
         return this.element.length;
     }

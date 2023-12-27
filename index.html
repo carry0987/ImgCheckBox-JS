@@ -16,7 +16,7 @@
         <div class="d-flex flex-row justify-content-center align-items-center">
             <div class="d-flex flex-column justify-content-center align-items-center">
                 <h4>Number of selected images:</h4>
-                <div id="selectedImages"></div>
+                <div id="selectedImages">0</div>
             </div>
         </div>
         <div class="d-flex justify-content-center">
@@ -66,7 +66,9 @@
                 '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
             },
             onChange: (el, checked) => {
-                console.log(el);
+                console.log(imgCheckBox.getChecked());
+                const selectedImages = document.getElementById('selectedImages');
+                selectedImages.innerHTML = parseInt(imgCheckBox.getChecked().length);
             }
         });
         const imgCheckBoxForm = new ImgCheckBox('#imgCheckBoxForm img', {
