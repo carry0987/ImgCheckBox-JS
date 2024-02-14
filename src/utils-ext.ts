@@ -4,20 +4,20 @@ import {
     setReplaceRule as _setReplaceRule,
     injectStylesheet as _injectStylesheet,
     removeStylesheet as _removeStylesheet,
-    errorUtils as _errorUtils,
-    domUtils as _domUtils
+    throwError as _throwError,
+    getElem as _getElem
 } from '@carry0987/utils';
 
 import { ConstantsType, StylesObject, ChangeEventDetail } from './interface/interfaces';
 
 class Utils {
-    static throwError = _errorUtils.throwError;
+    static throwError = _throwError;
     static deepMerge = _deepMerge;
     static setStylesheetId = _setStylesheetId;
     static setReplaceRule = _setReplaceRule;
     static injectStylesheet = _injectStylesheet;
     static removeStylesheet = _removeStylesheet;
-    static getElem = _domUtils.getElem;
+    static getElem = _getElem;
 
     static changeSelection(
         chosenElement: HTMLElement,

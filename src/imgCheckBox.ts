@@ -12,8 +12,8 @@ declare global {
 class ImgCheckBox {
     private static instances: ImgCheckBox[] = [];
     private static version: string = '__version__';
-    private element!: HTMLElementWithSelection[];
-    private options!: ImgCheckBoxOptions;
+    private element: HTMLElementWithSelection[] = [];
+    private options: ImgCheckBoxOptions = defaults;
     private targetIndex: number = 0;
     private imgChkMethods = new Map<HTMLElement, { deselect: () => void; select: () => void }>();
 
@@ -24,12 +24,12 @@ class ImgCheckBox {
     static readonly EVENT_DESELECT = 'deselect';
 
     // Methods for external use
-    private _onClick: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
-    private _onChange: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
-    private _onSelect: ((element: HTMLElementWithSelection) => void) | null = null;
-    private _onDeselect: ((element: HTMLElementWithSelection) => void) | null = null;
+    private onClickCallback: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
+    private onChangeCallback: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
+    private onSelectCallback: ((element: HTMLElementWithSelection) => void) | null = null;
+    private onDeselectCallback: ((element: HTMLElementWithSelection) => void) | null = null;
 
-    constructor(element: string | Element, option: ImgCheckBoxOptions = {}) {
+    constructor(element: string | Element, option: Partial<ImgCheckBoxOptions>) {
         this.init(element, option);
         ImgCheckBox.instances.push(this);
 
@@ -41,18 +41,18 @@ class ImgCheckBox {
     /**
      * Initialization
      */
-    init(element: string | Element, option: ImgCheckBoxOptions): void {
+    init(element: string | Element, option: Partial<ImgCheckBoxOptions>): void {
         let elems = Utils.getElem(element, 'all');
         if (!elems) Utils.throwError('Element not found');
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElementWithSelection[];
         if (this.element.length === 0) Utils.throwError('Element not found');
         // Replace default options with user defined options
-        this.options = Utils.deepMerge({}, defaults, option);
+        this.options = Utils.deepMerge({} as ImgCheckBoxOptions, defaults, option);
         // Set event handlers' callback if provided
-        this._onClick = option.onClick || null;
-        this._onChange = option.onChange || null;
-        this._onSelect = option.onSelect || null;
-        this._onDeselect = option.onDeselect || null;
+        this.onClickCallback = option.onClick || null;
+        this.onChangeCallback = option.onChange || null;
+        this.onSelectCallback = option.onSelect || null;
+        this.onDeselectCallback = option.onDeselect || null;
         // Call the onLoad callback if provided
         this.options?.onLoad?.();
         this.createImgCheckbox(ImgCheckBox.instances.length);
@@ -102,7 +102,7 @@ class ImgCheckBox {
             Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': { 'background-image': 'url(\'' + options.checkMarkImage + '\')' } });
         }
         // Give the checkmark dimensions
-        let chkDimensions = options.checkMarkSize!.split(' ');
+        let chkDimensions = options.checkMarkSize.split(' ');
         Utils.deepMerge(finalStyles, {
             'span.imgCheckbox::before': {
                 'width': chkDimensions[0],
@@ -110,7 +110,7 @@ class ImgCheckBox {
             }
         });
         // Give the checkmark a position
-        Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': CHECKMARK_POSITION[options.checkMarkPosition!] });
+        Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': CHECKMARK_POSITION[options.checkMarkPosition] });
         // Fixed image sizes
         if (options.fixedImageSize && typeof options.fixedImageSize === 'string') {
             let imgDimensions = options.fixedImageSize.split(' ');
@@ -151,7 +151,7 @@ class ImgCheckBox {
             'img': {},
             '::before': {}
         }));
-        finalStyles = Utils.deepMerge({}, defaultStyles, finalStyles, options.styles!);
+        finalStyles = Utils.deepMerge({}, defaultStyles, finalStyles, options.styles);
         // Now that we've built up our styles, inject them
         Utils.injectStylesheet(finalStyles, id.toString());
 
@@ -176,11 +176,11 @@ class ImgCheckBox {
             // Set up select/deselect functions
             const methods = {
                 deselect: () => {
-                    Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
+                    Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.triggerEvent(ImgCheckBox.EVENT_DESELECT, wrapper);
                 },
                 select: () => {
-                    Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
+                    Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.triggerEvent(ImgCheckBox.EVENT_SELECT, wrapper);
                 }
             };
@@ -251,7 +251,7 @@ class ImgCheckBox {
                         }
                     }
                 } else {
-                    const isSelected = Utils.changeSelection(el, CHK_TOGGLE, options.addToForm!, options.radio!, options.canDeselect!, wrapperElements, ImgCheckBox.constants);
+                    const isSelected = Utils.changeSelection(el, CHK_TOGGLE, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.triggerEvent(ImgCheckBox.EVENT_CLICK, el, isSelected);
                     isSelected ? this.triggerEvent(ImgCheckBox.EVENT_SELECT, el) : this.triggerEvent(ImgCheckBox.EVENT_DESELECT, el);
                 }
@@ -271,19 +271,19 @@ class ImgCheckBox {
         switch (eventType) {
             case ImgCheckBox.EVENT_CLICK:
                 if (isSelected !== undefined) {
-                    this._onClick?.(element, isSelected);
+                    this.onClickCallback?.(element, isSelected);
                 }
                 break;
             case ImgCheckBox.EVENT_CHANGE:
                 if (isSelected !== undefined) {
-                    this._onChange?.(element, isSelected);
+                    this.onChangeCallback?.(element, isSelected);
                 }
                 break;
             case ImgCheckBox.EVENT_SELECT:
-                this._onSelect?.(element);
+                this.onSelectCallback?.(element);
                 break;
             case ImgCheckBox.EVENT_DESELECT:
-                this._onDeselect?.(element);
+                this.onDeselectCallback?.(element);
                 break;
             default:
                 Utils.throwError(`Unsupported event type: ${eventType}`);
@@ -356,19 +356,19 @@ class ImgCheckBox {
 
     // Methods for external use
     set onClick(callback: (element: HTMLElementWithSelection) => void) {
-        this._onClick = callback;
+        this.onClickCallback = callback;
     }
 
     set onChange(callback: (element: HTMLElementWithSelection, isSelected: boolean) => void) {
-        this._onChange = callback;
+        this.onChangeCallback = callback;
     }
 
     set onSelect(callback: (element: HTMLElementWithSelection) => void) {
-        this._onSelect = callback;
+        this.onSelectCallback = callback;
     }
 
     set onDeselect(callback: (element: HTMLElementWithSelection) => void) {
-        this._onDeselect = callback;
+        this.onDeselectCallback = callback;
     }
 
     get length(): number {

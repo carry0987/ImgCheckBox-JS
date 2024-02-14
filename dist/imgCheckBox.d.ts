@@ -1,20 +1,20 @@
 interface ImgCheckBoxOptions {
-    checkMarkImage?: string;
-    enableShiftClick?: boolean;
-    graySelected?: boolean;
-    scaleSelected?: boolean;
-    fixedImageSize?: boolean | string;
-    checkMark?: string;
-    checkMarkSize?: string;
-    checkMarkPosition?: string;
-    scaleCheckMark?: boolean;
-    fadeCheckMark?: boolean;
-    addToForm?: boolean | Element;
-    inputValueAttribute?: string | null;
-    preselect?: boolean | number[];
-    radio?: boolean;
-    canDeselect?: boolean;
-    styles?: object;
+    checkMarkImage: string;
+    enableShiftClick: boolean;
+    graySelected: boolean;
+    scaleSelected: boolean;
+    fixedImageSize: boolean | string;
+    checkMark: string;
+    checkMarkSize: string;
+    checkMarkPosition: string;
+    scaleCheckMark: boolean;
+    fadeCheckMark: boolean;
+    addToForm: boolean | Element;
+    inputValueAttribute: string | null;
+    preselect: boolean | number[];
+    radio: boolean;
+    canDeselect: boolean;
+    styles: object;
     onLoad?: () => void;
     onClick?: (wrapper: Element, isSelected: boolean) => void;
     onChange?: (wrapper: Element, isSelected: boolean) => void;
@@ -53,15 +53,15 @@ declare class ImgCheckBox {
     static readonly EVENT_CHANGE = "change";
     static readonly EVENT_SELECT = "select";
     static readonly EVENT_DESELECT = "deselect";
-    private _onClick;
-    private _onChange;
-    private _onSelect;
-    private _onDeselect;
-    constructor(element: string | Element, option?: ImgCheckBoxOptions);
+    private onClickCallback;
+    private onChangeCallback;
+    private onSelectCallback;
+    private onDeselectCallback;
+    constructor(element: string | Element, option: Partial<ImgCheckBoxOptions>);
     /**
      * Initialization
      */
-    init(element: string | Element, option: ImgCheckBoxOptions): void;
+    init(element: string | Element, option: Partial<ImgCheckBoxOptions>): void;
     /**
      * Main function for creating the imgCheckbox
      */

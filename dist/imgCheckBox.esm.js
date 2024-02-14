@@ -1,17 +1,9 @@
-function reportError(...error) {
-    console.error(...error);
-}
 function throwError(message) {
     throw new Error(message);
 }
 
-var errorUtils = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    reportError: reportError,
-    throwError: throwError
-});
-
 function getElem(ele, mode, parent) {
+    // Return generic Element type or NodeList
     if (typeof ele !== 'string')
         return ele;
     let searchContext = document;
@@ -25,6 +17,7 @@ function getElem(ele, mode, parent) {
         searchContext = parent;
     }
     // If mode is 'all', search for all elements that match, otherwise, search for the first match
+    // Casting the result as E or NodeList
     return mode === 'all' ? searchContext.querySelectorAll(ele) : searchContext.querySelector(ele);
 }
 function createElem(tagName, attrs = {}, text = '') {
@@ -43,55 +36,6 @@ function createElem(tagName, attrs = {}, text = '') {
         elem.textContent = text;
     return elem;
 }
-function insertAfter(referenceNode, newNode) {
-    if (typeof newNode === 'string') {
-        let elem = createElem('div');
-        elem.innerHTML = newNode;
-        newNode = elem.firstChild;
-        if (!newNode) {
-            throwError('The new node (string) provided did not produce a valid DOM element.');
-        }
-    }
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
-function insertBefore(referenceNode, newNode) {
-    if (typeof newNode === 'string') {
-        let elem = createElem('div');
-        elem.innerHTML = newNode;
-        newNode = elem.firstChild;
-        if (!newNode) {
-            throwError('The new node (string) provided did not produce a valid DOM element.');
-        }
-    }
-    referenceNode.parentNode.insertBefore(newNode, referenceNode);
-}
-function addClass(ele, className) {
-    ele.classList.add(className);
-    return ele;
-}
-function removeClass(ele, className) {
-    ele.classList.remove(className);
-    return ele;
-}
-function toggleClass(ele, className) {
-    ele.classList.toggle(className);
-    return ele;
-}
-function hasClass(ele, className) {
-    return ele.classList.contains(className);
-}
-
-var domUtils = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    addClass: addClass,
-    createElem: createElem,
-    getElem: getElem,
-    hasClass: hasClass,
-    insertAfter: insertAfter,
-    insertBefore: insertBefore,
-    removeClass: removeClass,
-    toggleClass: toggleClass
-});
 
 let stylesheetId = 'utils-style';
 const replaceRule = {
@@ -163,9 +107,9 @@ function compatInsertRule(stylesheet, selector, cssText, id = null) {
     stylesheet.insertRule(modifiedSelector + '{' + cssText + '}', 0);
 }
 function removeStylesheet(id = null) {
-    id = isEmpty(id) ? '' : id;
-    let styleElement = getElem('#' + stylesheetId + id);
-    if (styleElement) {
+    const styleId = isEmpty(id) ? '' : id;
+    let styleElement = getElem('#' + stylesheetId + styleId);
+    if (styleElement && styleElement.parentNode) {
         styleElement.parentNode.removeChild(styleElement);
     }
 }
@@ -177,13 +121,13 @@ function isEmpty(str) {
 }
 
 class Utils {
-    static throwError = errorUtils.throwError;
+    static throwError = throwError;
     static deepMerge = deepMerge;
     static setStylesheetId = setStylesheetId;
     static setReplaceRule = setReplaceRule;
     static injectStylesheet = injectStylesheet;
     static removeStylesheet = removeStylesheet;
-    static getElem = domUtils.getElem;
+    static getElem = getElem;
     static changeSelection(chosenElement, howToModify, addToForm, radio, canDeselect, wrapperElements, constants) {
         const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
         const isSelected = chosenElement.classList.contains(CHECK_MARK);
@@ -382,9 +326,9 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.1.0';
-    element;
-    options;
+    static version = '2.1.1';
+    element = [];
+    options = defaults;
     targetIndex = 0;
     imgChkMethods = new Map();
     // Constants for Event Types
@@ -393,11 +337,11 @@ class ImgCheckBox {
     static EVENT_SELECT = 'select';
     static EVENT_DESELECT = 'deselect';
     // Methods for external use
-    _onClick = null;
-    _onChange = null;
-    _onSelect = null;
-    _onDeselect = null;
-    constructor(element, option = {}) {
+    onClickCallback = null;
+    onChangeCallback = null;
+    onSelectCallback = null;
+    onDeselectCallback = null;
+    constructor(element, option) {
         this.init(element, option);
         ImgCheckBox.instances.push(this);
         if (ImgCheckBox.instances.length === 1) {
@@ -417,10 +361,10 @@ class ImgCheckBox {
         // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option);
         // Set event handlers' callback if provided
-        this._onClick = option.onClick || null;
-        this._onChange = option.onChange || null;
-        this._onSelect = option.onSelect || null;
-        this._onDeselect = option.onDeselect || null;
+        this.onClickCallback = option.onClick || null;
+        this.onChangeCallback = option.onChange || null;
+        this.onSelectCallback = option.onSelect || null;
+        this.onDeselectCallback = option.onDeselect || null;
         // Call the onLoad callback if provided
         this.options?.onLoad?.();
         this.createImgCheckbox(ImgCheckBox.instances.length);
@@ -628,19 +572,19 @@ class ImgCheckBox {
         switch (eventType) {
             case ImgCheckBox.EVENT_CLICK:
                 if (isSelected !== undefined) {
-                    this._onClick?.(element, isSelected);
+                    this.onClickCallback?.(element, isSelected);
                 }
                 break;
             case ImgCheckBox.EVENT_CHANGE:
                 if (isSelected !== undefined) {
-                    this._onChange?.(element, isSelected);
+                    this.onChangeCallback?.(element, isSelected);
                 }
                 break;
             case ImgCheckBox.EVENT_SELECT:
-                this._onSelect?.(element);
+                this.onSelectCallback?.(element);
                 break;
             case ImgCheckBox.EVENT_DESELECT:
-                this._onDeselect?.(element);
+                this.onDeselectCallback?.(element);
                 break;
             default:
                 Utils.throwError(`Unsupported event type: ${eventType}`);
@@ -704,16 +648,16 @@ class ImgCheckBox {
     }
     // Methods for external use
     set onClick(callback) {
-        this._onClick = callback;
+        this.onClickCallback = callback;
     }
     set onChange(callback) {
-        this._onChange = callback;
+        this.onChangeCallback = callback;
     }
     set onSelect(callback) {
-        this._onSelect = callback;
+        this.onSelectCallback = callback;
     }
     set onDeselect(callback) {
-        this._onDeselect = callback;
+        this.onDeselectCallback = callback;
     }
     get length() {
         return this.element.length;
