@@ -4,8 +4,12 @@ function throwError(message) {
 
 function getElem(ele, mode, parent) {
     // Return generic Element type or NodeList
-    if (typeof ele !== 'string')
+    if (typeof ele !== 'string') {
+        if (mode === 'all') {
+            return [ele];
+        }
         return ele;
+    }
     let searchContext = document;
     if (mode === null && parent) {
         searchContext = parent;
@@ -326,7 +330,7 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.1.1';
+    static version = '2.2.0';
     element = [];
     options = defaults;
     targetIndex = 0;

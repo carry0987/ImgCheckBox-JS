@@ -57,11 +57,11 @@ declare class ImgCheckBox {
     private onChangeCallback;
     private onSelectCallback;
     private onDeselectCallback;
-    constructor(element: string | Element, option: Partial<ImgCheckBoxOptions>);
+    constructor(element: string, option: Partial<ImgCheckBoxOptions>);
     /**
      * Initialization
      */
-    init(element: string | Element, option: Partial<ImgCheckBoxOptions>): void;
+    init(element: string, option: Partial<ImgCheckBoxOptions>): void;
     /**
      * Main function for creating the imgCheckbox
      */

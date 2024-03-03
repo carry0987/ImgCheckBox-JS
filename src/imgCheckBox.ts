@@ -29,7 +29,7 @@ class ImgCheckBox {
     private onSelectCallback: ((element: HTMLElementWithSelection) => void) | null = null;
     private onDeselectCallback: ((element: HTMLElementWithSelection) => void) | null = null;
 
-    constructor(element: string | Element, option: Partial<ImgCheckBoxOptions>) {
+    constructor(element: string, option: Partial<ImgCheckBoxOptions>) {
         this.init(element, option);
         ImgCheckBox.instances.push(this);
 
@@ -41,7 +41,7 @@ class ImgCheckBox {
     /**
      * Initialization
      */
-    init(element: string | Element, option: Partial<ImgCheckBoxOptions>): void {
+    init(element: string, option: Partial<ImgCheckBoxOptions>): void {
         let elems = Utils.getElem(element, 'all');
         if (!elems) Utils.throwError('Element not found');
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElementWithSelection[];

@@ -1,6 +1,6 @@
 {
   "name": "@carry0987/imgcheckbox",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A library for create checkable img tags",
   "type": "module",
   "main": "dist/imgCheckBox.min.js",
@@ -29,12 +29,12 @@
   },
   "homepage": "https://github.com/carry0987/ImgCheckBox-JS#readme",
   "devDependencies": {
-    "@carry0987/utils": "^3.2.8",
+    "@carry0987/utils": "^3.2.13",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
-    "rollup": "^4.10.0",
+    "rollup": "^4.12.0",
     "rollup-plugin-delete": "^2.0.0",
     "rollup-plugin-dts": "^6.1.0",
     "tslib": "^2.6.2",
