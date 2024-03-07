@@ -18,10 +18,10 @@ class ImgCheckBox {
     private imgChkMethods = new Map<HTMLElement, { deselect: () => void; select: () => void }>();
 
     // Constants for Event Types
-    static readonly EVENT_CLICK = 'click';
-    static readonly EVENT_CHANGE = 'change';
-    static readonly EVENT_SELECT = 'select';
-    static readonly EVENT_DESELECT = 'deselect';
+    private static readonly EVENT_CLICK = 'click';
+    private static readonly EVENT_CHANGE = 'change';
+    private static readonly EVENT_SELECT = 'select';
+    private static readonly EVENT_DESELECT = 'deselect';
 
     // Methods for external use
     private onClickCallback: ((element: HTMLElementWithSelection, isSelected: boolean) => void) | null = null;
@@ -41,7 +41,7 @@ class ImgCheckBox {
     /**
      * Initialization
      */
-    init(element: string, option: Partial<ImgCheckBoxOptions>): void {
+    private init(element: string, option: Partial<ImgCheckBoxOptions>): void {
         let elems = Utils.getElem(element, 'all');
         if (!elems) Utils.throwError('Element not found');
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElementWithSelection[];
@@ -290,7 +290,7 @@ class ImgCheckBox {
         }
     }
 
-    target(index: number): ImgCheckBox | void {
+    public target(index: number): ImgCheckBox | void {
         if (index >= 0 && index < this.element.length) {
             this.targetIndex = index;
             return this;
@@ -299,13 +299,13 @@ class ImgCheckBox {
         }
     }
 
-    state(): boolean {
+    public state(): boolean {
         const element = Utils.getElem(this.element[this.targetIndex]) as HTMLElement;
         const parentElement = element.parentNode as HTMLElement;
         return parentElement && parentElement.classList.contains(CHECK_MARK);
     }
 
-    select(index: number): void {
+    public select(index: number): void {
         if (index < 0 || index >= this.element.length) {
             Utils.throwError('The given index is out of range.');
             return;
@@ -313,7 +313,7 @@ class ImgCheckBox {
         this.element[index].imgChkSelect?.();
     }
 
-    deselect(index: number): void {
+    public deselect(index: number): void {
         if (index < 0 || index >= this.element.length) {
             Utils.throwError('The given index is out of range.');
             return;
@@ -321,15 +321,15 @@ class ImgCheckBox {
         this.element[index].imgChkDeselect?.();
     }
 
-    selectAll(): void {
+    public selectAll(): void {
         this.element.forEach(el => el.imgChkSelect?.());
     }
 
-    deselectAll(): void {
+    public deselectAll(): void {
         this.element.forEach(el => el.imgChkDeselect?.());
     }
 
-    destroy(): void {
+    public destroy(): void {
         let id = ImgCheckBox.instances.indexOf(this);
         if (id < 0) {
             Utils.throwError('ImgCheckBox instance not found');
@@ -346,36 +346,36 @@ class ImgCheckBox {
         ImgCheckBox.instances.splice(id, 1);
     }
 
-    getChecked(): HTMLElementWithSelection[] {
+    public getChecked(): HTMLElementWithSelection[] {
         return this.element.filter(el => el.parentElement?.classList.contains(CHECK_MARK));
     }
 
-    getUnchecked(): HTMLElementWithSelection[] {
+    public getUnchecked(): HTMLElementWithSelection[] {
         return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
     }
 
     // Methods for external use
-    set onClick(callback: (element: HTMLElementWithSelection) => void) {
+    public set onClick(callback: (element: HTMLElementWithSelection) => void) {
         this.onClickCallback = callback;
     }
 
-    set onChange(callback: (element: HTMLElementWithSelection, isSelected: boolean) => void) {
+    public set onChange(callback: (element: HTMLElementWithSelection, isSelected: boolean) => void) {
         this.onChangeCallback = callback;
     }
 
-    set onSelect(callback: (element: HTMLElementWithSelection) => void) {
+    public set onSelect(callback: (element: HTMLElementWithSelection) => void) {
         this.onSelectCallback = callback;
     }
 
-    set onDeselect(callback: (element: HTMLElementWithSelection) => void) {
+    public set onDeselect(callback: (element: HTMLElementWithSelection) => void) {
         this.onDeselectCallback = callback;
     }
 
-    get length(): number {
+    public get length(): number {
         return this.element.length;
     }
 
-    static get constants(): ConstantsType {
+    private static get constants(): ConstantsType {
         return {
             CHECK_MARK: CHECK_MARK,
             CHK_DESELECT: CHK_DESELECT,
@@ -385,4 +385,5 @@ class ImgCheckBox {
     }
 }
 
-export default ImgCheckBox;
+export { ImgCheckBox as default };
+export * from './interface/interfaces';

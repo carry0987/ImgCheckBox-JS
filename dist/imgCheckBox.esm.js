@@ -330,7 +330,7 @@ const defaultStyles = {
 
 class ImgCheckBox {
     static instances = [];
-    static version = '2.2.0';
+    static version = '2.2.1';
     element = [];
     options = defaults;
     targetIndex = 0;

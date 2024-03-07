@@ -22,6 +22,15 @@ interface ImgCheckBoxOptions {
     onDeselect?: (wrapper: Element) => void;
     debugMessages?: boolean;
 }
+interface CheckmarkPositionStyles {
+    [position: string]: {
+        top?: string | number;
+        left?: string | number;
+        right?: string | number;
+        bottom?: string | number;
+        margin?: string | number;
+    };
+}
 interface HTMLElementWithSelection extends HTMLElement {
     imgChkSelect?: () => void;
     imgChkDeselect?: () => void;
@@ -36,6 +45,12 @@ interface ConstantsType {
     CHK_TOGGLE: number;
     CHK_SELECT: number;
 }
+interface ChangeEventDetail {
+    isSelected: boolean;
+}
+interface StylesObject {
+    [selector: string]: string | number | StylesObject;
+}
 
 declare global {
     interface Array<T> {
@@ -49,10 +64,10 @@ declare class ImgCheckBox {
     private options;
     private targetIndex;
     private imgChkMethods;
-    static readonly EVENT_CLICK = "click";
-    static readonly EVENT_CHANGE = "change";
-    static readonly EVENT_SELECT = "select";
-    static readonly EVENT_DESELECT = "deselect";
+    private static readonly EVENT_CLICK;
+    private static readonly EVENT_CHANGE;
+    private static readonly EVENT_SELECT;
+    private static readonly EVENT_DESELECT;
     private onClickCallback;
     private onChangeCallback;
     private onSelectCallback;
@@ -61,7 +76,7 @@ declare class ImgCheckBox {
     /**
      * Initialization
      */
-    init(element: string, option: Partial<ImgCheckBoxOptions>): void;
+    private init;
     /**
      * Main function for creating the imgCheckbox
      */
@@ -81,7 +96,7 @@ declare class ImgCheckBox {
     set onSelect(callback: (element: HTMLElementWithSelection) => void);
     set onDeselect(callback: (element: HTMLElementWithSelection) => void);
     get length(): number;
-    static get constants(): ConstantsType;
+    private static get constants();
 }
 
-export { ImgCheckBox as default };
+export { type ChangeEventDetail, type CheckmarkPositionStyles, type ConstantsType, type HTMLElementWithSelection, type ImgCheckBoxInstance, type ImgCheckBoxOptions, type StylesObject, ImgCheckBox as default };
