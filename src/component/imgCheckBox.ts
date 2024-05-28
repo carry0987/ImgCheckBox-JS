@@ -13,7 +13,7 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private targetIndex: number = 0;
     private imgChkMethods = new Map<HTMLElement, { deselect: () => void; select: () => void }>();
 
-    constructor(element: string, option: Partial<ImgCheckBoxOptions>) {
+    constructor(element: string, option?: Partial<ImgCheckBoxOptions>) {
         super();
         this.initialize(element, option);
         ImgCheckBox.instances.push(this);
@@ -28,13 +28,13 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     /**
      * Initialization
      */
-    private initialize(element: string, option: Partial<ImgCheckBoxOptions>): void {
+    private initialize(element: string, option?: Partial<ImgCheckBoxOptions>): void {
         let elems = Utils.getElem(element, 'all');
         if (!elems) Utils.throwError('Element not found');
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElement[];
         if (this.element.length === 0) Utils.throwError('Element not found');
         // Replace default options with user defined options
-        this.options = Utils.deepMerge({} as ImgCheckBoxOptions, defaults, option);
+        this.options = Utils.deepMerge({} as ImgCheckBoxOptions, defaults, option || {});
         // Create the imgCheckbox
         this.createImgCheckbox(ImgCheckBox.instances.length);
     }

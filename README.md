@@ -7,7 +7,7 @@ Seamlessly transform your images into interactive checkboxes with **ImgCheckBox*
 
 ## Installation
 ```bash
-npm install @carry0987/imgcheckbox
+npm i @carry0987/imgcheckbox
 ```
 
 ## Usage

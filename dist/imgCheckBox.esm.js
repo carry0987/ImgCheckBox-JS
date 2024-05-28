@@ -386,7 +386,7 @@ class EventEmitter {
 
 class ImgCheckBox extends EventEmitter {
     static instances = [];
-    static version = '3.0.1';
+    static version = '3.0.2';
     element = [];
     options = defaults;
     targetIndex = 0;
@@ -407,7 +407,7 @@ class ImgCheckBox extends EventEmitter {
         this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]);
         if (this.element.length === 0)
             Utils.throwError('Element not found');
-        this.options = Utils.deepMerge({}, defaults, option);
+        this.options = Utils.deepMerge({}, defaults, option || {});
         this.createImgCheckbox(ImgCheckBox.instances.length);
     }
     createImgCheckbox(id) {

@@ -45,7 +45,7 @@ declare class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private options;
     private targetIndex;
     private imgChkMethods;
-    constructor(element: string, option: Partial<ImgCheckBoxOptions>);
+    constructor(element: string, option?: Partial<ImgCheckBoxOptions>);
     private initialize;
     private createImgCheckbox;
     target(index: number): ImgCheckBox | void;
