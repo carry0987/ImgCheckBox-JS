@@ -3,12 +3,14 @@
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "node",
+    "importHelpers": true,
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "declarationDir": "dist/dts/",
+    "removeComments": true,
   },
-  "importHelpers": true,
   "include": ["src/*"],
   "exclude": ["node_modules"]
 }

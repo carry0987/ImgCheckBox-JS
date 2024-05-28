@@ -1,4 +1,4 @@
-import { ImgCheckBoxOptions, CheckmarkPositionStyles } from './interface/interfaces';
+import { ImgCheckBoxOptions, CheckmarkPositionStyles } from '../interface/interfaces';
 
 export const CHK_TOGGLE: number = 0;
 export const CHK_SELECT: number = 1;

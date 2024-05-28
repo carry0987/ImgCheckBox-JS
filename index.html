@@ -65,13 +65,22 @@
             styles: {
                 'span.imgCheckbox img': { 'border-radius': '0px' },
                 '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
-            },
-            onChange: (el, checked) => {
-                console.log(imgCheckBox.getChecked());
-                const selectedImages = document.getElementById('selectedImages');
-                selectedImages.innerHTML = parseInt(imgCheckBox.getChecked().length);
             }
         });
+        imgCheckBox.on('change', (el, checked) => {
+            console.log('Fake', imgCheckBox.getChecked());
+        });
+        imgCheckBox.clearListener('change');
+        imgCheckBox.on('change', (el, checked) => {
+            console.log('Real', imgCheckBox.getChecked());
+            const selectedImages = document.getElementById('selectedImages');
+            selectedImages.innerHTML = parseInt(imgCheckBox.getChecked().length);
+        });
+        imgCheckBox.on('selectAll', (els) => {
+            console.log('Select All', els);
+        });
+        imgCheckBox.selectAll();
+
         const imgCheckBoxForm = new ImgCheckBox('#imgCheckBoxForm img', {
             graySelected: false,
             scaleSelected: true,

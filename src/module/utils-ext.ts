@@ -8,16 +8,19 @@ import {
     getElem as _getElem
 } from '@carry0987/utils';
 
-import { ConstantsType, StylesObject, ChangeEventDetail } from './interface/interfaces';
+import { ConstantsType, StylesObject, ChangeEventDetail } from '../interface/interfaces';
 
 class Utils {
-    static throwError = _throwError;
     static deepMerge = _deepMerge;
     static setStylesheetId = _setStylesheetId;
     static setReplaceRule = _setReplaceRule;
     static injectStylesheet = _injectStylesheet;
     static removeStylesheet = _removeStylesheet;
     static getElem = _getElem;
+
+    static throwError = (msg: string): void => {
+        _throwError('[ImgCheckBox]: ' + msg);
+    }
 
     static changeSelection(
         chosenElement: HTMLElement,

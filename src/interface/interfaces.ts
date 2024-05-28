@@ -15,11 +15,6 @@ export interface ImgCheckBoxOptions {
     radio: boolean;
     canDeselect: boolean;
     styles: object;
-    onLoad?: () => void;
-    onClick?: (wrapper: Element, isSelected: boolean) => void;
-    onChange?: (wrapper: Element, isSelected: boolean) => void;
-    onSelect?: (wrapper: Element) => void;
-    onDeselect?: (wrapper: Element) => void;
     debugMessages?: boolean;
 }
 
@@ -31,16 +26,6 @@ export interface CheckmarkPositionStyles {
         bottom?: string | number,
         margin?: string | number
     }
-}
-
-export interface HTMLElementWithSelection extends HTMLElement {
-    imgChkSelect?: () => void;
-    imgChkDeselect?: () => void;
-}
-
-export interface ImgCheckBoxInstance {
-    element: HTMLElementWithSelection[];
-    options: ImgCheckBoxOptions;
 }
 
 export interface ConstantsType {

@@ -8,9 +8,11 @@ import { createRequire } from 'module';
 const pkg = createRequire(import.meta.url)('./package.json');
 
 const isProduction = process.env.BUILD === 'production';
+const sourceFile = 'src/index.ts';
+const dtsFile = 'dist/dts/index.d.ts';
 
 const jsConfig = {
-    input: 'src/imgCheckBox.ts',
+    input: sourceFile,
     output: [
         {
             file: pkg.main,
@@ -34,14 +36,14 @@ const jsConfig = {
 };
 
 const dtsConfig = {
-    input: 'dist/imgCheckBox.d.ts',
+    input: dtsFile,
     output: {
         file: pkg.types,
         format: 'es'
     },
     plugins: [
         dts(),
-        del({ hook: 'buildEnd', targets: ['!dist/index.js', 'dist/*.d.ts', 'dist/interface'] })
+        del({ hook: 'buildEnd', targets: 'dist/dts' })
     ]
 };
 
