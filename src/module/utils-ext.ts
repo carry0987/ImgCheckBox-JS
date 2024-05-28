@@ -8,7 +8,7 @@ import {
     getElem as _getElem
 } from '@carry0987/utils';
 
-import { ConstantsType, StylesObject, ChangeEventDetail } from '../interface/interfaces';
+import { ConstantsType, StylesObject } from '../interface/interfaces';
 
 class Utils {
     static deepMerge = _deepMerge;
@@ -32,7 +32,6 @@ class Utils {
         constants: ConstantsType
     ): boolean {
         const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
-        const isSelected = chosenElement.classList.contains(CHECK_MARK);
         if (radio && (howToModify !== CHK_DESELECT)) {
             wrapperElements.forEach(wrapper => (wrapper !== chosenElement) && wrapper.classList.remove(CHECK_MARK));
             canDeselect ? chosenElement.classList.toggle(CHECK_MARK) : chosenElement.classList.add(CHECK_MARK);
@@ -42,14 +41,6 @@ class Utils {
             (howToModify === CHK_SELECT && chosenElement.classList.add(CHECK_MARK));
         }
         const currentIsSelected = chosenElement.classList.contains(CHECK_MARK);
-        if (isSelected !== currentIsSelected) {
-            const event = new CustomEvent<ChangeEventDetail>('change', {
-                detail: {
-                    isSelected: currentIsSelected
-                }
-            });
-            chosenElement.dispatchEvent(event);
-        }
         if (addToForm) {
             Utils.updateFormValues(radio ? wrapperElements : chosenElement, CHECK_MARK);
         }

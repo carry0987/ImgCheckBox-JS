@@ -1,6 +1,6 @@
 import Utils from '../module/utils-ext';
 import reportInfo from '../module/report';
-import { ImgCheckBoxOptions, ConstantsType, ChangeEventDetail } from '../interface/interfaces';
+import { ImgCheckBoxOptions, ConstantsType } from '../interface/interfaces';
 import { ImgCheckBoxEvents } from '../interface/events';
 import { CHK_TOGGLE, CHK_SELECT, CHK_DESELECT, CHECK_MARK, CHECKMARK_POSITION, defaults, defaultStyles } from './config';
 import { EventEmitter } from '@carry0987/event-emitter';
@@ -155,10 +155,12 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
                 deselect: () => {
                     Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.emit('deselect', wrapper);
+                    this.emit('change', wrapper, false);
                 },
                 select: () => {
                     Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.emit('select', wrapper);
+                    this.emit('change', wrapper, true);
                 }
             };
             this.imgChkMethods.set(wrapper, methods);
@@ -221,7 +223,6 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
                         if (!currentEl.classList.contains(CHECK_MARK)) {
                             this.imgChkMethods.get(currentEl)?.select();
                             this.emit('click', currentEl, true);
-                            this.emit('change', currentEl, true);
                         }
                     }
                 } else {
@@ -232,13 +233,9 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
                     } else {
                         this.emit('deselect', el);
                     }
+                    this.emit('change', el, isSelected);
                 }
                 lastClicked = el;
-            });
-
-            el.addEventListener('change', (e: Event) => {
-                const customEvent = e as CustomEvent<ChangeEventDetail>;
-                this.emit('change', el, customEvent.detail.isSelected);
             });
         });
 
@@ -330,5 +327,5 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     }
 }
 
-export { ImgCheckBox as default };
+export { ImgCheckBox };
 export * from '../interface/interfaces';

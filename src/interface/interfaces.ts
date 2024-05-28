@@ -35,10 +35,6 @@ export interface ConstantsType {
     CHK_SELECT: number;
 }
 
-export interface ChangeEventDetail {
-    isSelected: boolean;
-}
-
 export interface StylesObject {
     [selector: string]: string | number | StylesObject;
 }

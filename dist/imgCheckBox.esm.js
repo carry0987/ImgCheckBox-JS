@@ -136,7 +136,6 @@ class Utils {
     };
     static changeSelection(chosenElement, howToModify, addToForm, radio, canDeselect, wrapperElements, constants) {
         const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
-        const isSelected = chosenElement.classList.contains(CHECK_MARK);
         if (radio && (howToModify !== CHK_DESELECT)) {
             wrapperElements.forEach(wrapper => (wrapper !== chosenElement) && wrapper.classList.remove(CHECK_MARK));
             canDeselect ? chosenElement.classList.toggle(CHECK_MARK) : chosenElement.classList.add(CHECK_MARK);
@@ -147,14 +146,6 @@ class Utils {
                 (howToModify === CHK_SELECT && chosenElement.classList.add(CHECK_MARK));
         }
         const currentIsSelected = chosenElement.classList.contains(CHECK_MARK);
-        if (isSelected !== currentIsSelected) {
-            const event = new CustomEvent('change', {
-                detail: {
-                    isSelected: currentIsSelected
-                }
-            });
-            chosenElement.dispatchEvent(event);
-        }
         if (addToForm) {
             Utils.updateFormValues(radio ? wrapperElements : chosenElement, CHECK_MARK);
         }
@@ -395,7 +386,7 @@ class EventEmitter {
 
 class ImgCheckBox extends EventEmitter {
     static instances = [];
-    static version = '3.0.0';
+    static version = '3.0.1';
     element = [];
     options = defaults;
     targetIndex = 0;
@@ -502,10 +493,12 @@ class ImgCheckBox extends EventEmitter {
                 deselect: () => {
                     Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.emit('deselect', wrapper);
+                    this.emit('change', wrapper, false);
                 },
                 select: () => {
                     Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
                     this.emit('select', wrapper);
+                    this.emit('change', wrapper, true);
                 }
             };
             this.imgChkMethods.set(wrapper, methods);
@@ -566,7 +559,6 @@ class ImgCheckBox extends EventEmitter {
                         if (!currentEl.classList.contains(CHECK_MARK)) {
                             this.imgChkMethods.get(currentEl)?.select();
                             this.emit('click', currentEl, true);
-                            this.emit('change', currentEl, true);
                         }
                     }
                 }
@@ -579,12 +571,9 @@ class ImgCheckBox extends EventEmitter {
                     else {
                         this.emit('deselect', el);
                     }
+                    this.emit('change', el, isSelected);
                 }
                 lastClicked = el;
-            });
-            el.addEventListener('change', (e) => {
-                const customEvent = e;
-                this.emit('change', el, customEvent.detail.isSelected);
             });
         });
         return this;

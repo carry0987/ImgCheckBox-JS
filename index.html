@@ -72,7 +72,7 @@
         });
         imgCheckBox.clearListener('change');
         imgCheckBox.on('change', (el, checked) => {
-            console.log('Real', imgCheckBox.getChecked());
+            console.log('Change', imgCheckBox.getChecked());
             const selectedImages = document.getElementById('selectedImages');
             selectedImages.innerHTML = parseInt(imgCheckBox.getChecked().length);
         });
