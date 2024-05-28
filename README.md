@@ -38,9 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
             '.image-box .image-layer ~ .imgChked': { 'background-color': 'transparent' }
         },
         preselect: [0, 2],
-        onChange: (el, checked) => {
-            console.log(el);
-        }
+    });
+    imgCheckBox.on('change', (el, checked) => {
+        console.log(el);
     });
 });
 </script>
