@@ -1,16 +1,17 @@
 {
-  "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "importHelpers": true,
-    "strict": true,
-    "esModuleInterop": true,
-    "declaration": true,
-    "outDir": "dist",
-    "declarationDir": "dist/dts/",
-    "removeComments": true,
-  },
-  "include": ["src/*"],
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "importHelpers": true,
+        "strict": true,
+        "declaration": true,
+        "declarationDir": "dist/dts/",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "dist", "**/__snapshots__/**/*"]
 }

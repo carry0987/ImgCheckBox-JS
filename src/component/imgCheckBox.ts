@@ -1,8 +1,16 @@
-import Utils from '../module/utils-ext';
-import reportInfo from '../module/report';
-import { ImgCheckBoxOptions, ConstantsType } from '../interface/interfaces';
-import { ImgCheckBoxEvents } from '../interface/events';
-import { CHK_TOGGLE, CHK_SELECT, CHK_DESELECT, CHECK_MARK, CHECKMARK_POSITION, defaults, defaultStyles } from './config';
+import {
+    CHK_TOGGLE,
+    CHK_SELECT,
+    CHK_DESELECT,
+    CHECK_MARK,
+    CHECKMARK_POSITION,
+    defaults,
+    defaultStyles
+} from './config';
+import Utils from '@/module/utils-ext';
+import reportInfo from '@/module/report';
+import { ImgCheckBoxEvents } from '@/interface/events';
+import { ImgCheckBoxOptions, ConstantsType } from '@/interface/interfaces';
 import { EventEmitter } from '@carry0987/event-emitter';
 
 class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
@@ -31,7 +39,9 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private initialize(element: string, option?: Partial<ImgCheckBoxOptions>): void {
         let elems = Utils.getElem(element, 'all');
         if (!elems) Utils.throwError('Element not found');
-        this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElement[];
+        this.element = Array.isArray(elems)
+            ? elems
+            : ((elems instanceof NodeList ? Array.from(elems) : [elems]) as HTMLElement[]);
         if (this.element.length === 0) Utils.throwError('Element not found');
         // Replace default options with user defined options
         this.options = Utils.deepMerge({} as ImgCheckBoxOptions, defaults, option || {});
@@ -53,45 +63,67 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
         let wrapperElements: HTMLElement[] = [];
 
         // Generate grayscale styles if enabled
-        let grayscaleStyles = Utils.buildStyles('img', CHECK_MARK, {
-            'transform': 'scale(1)',
-            'filter': 'none',
-            '-webkit-filter': 'grayscale(0)'
-        }, {
-            'filter': 'grayscale(1)',
-            '-webkit-filter': 'grayscale(1)'
-        });
+        let grayscaleStyles = Utils.buildStyles(
+            'img',
+            CHECK_MARK,
+            {
+                transform: 'scale(1)',
+                filter: 'none',
+                '-webkit-filter': 'grayscale(0)'
+            },
+            {
+                filter: 'grayscale(1)',
+                '-webkit-filter': 'grayscale(1)'
+            }
+        );
 
-        let scaleStyles = Utils.buildStyles('img', CHECK_MARK, {
-            'transform': 'scale(1)'
-        }, {
-            'transform': 'scale(0.9)'
-        });
+        let scaleStyles = Utils.buildStyles(
+            'img',
+            CHECK_MARK,
+            {
+                transform: 'scale(1)'
+            },
+            {
+                transform: 'scale(0.9)'
+            }
+        );
 
-        let scaleCheckMarkStyles = Utils.buildStyles('::before', CHECK_MARK, {
-            'transform': 'scale(0)'
-        }, {
-            'transform': 'scale(1)'
-        });
+        let scaleCheckMarkStyles = Utils.buildStyles(
+            '::before',
+            CHECK_MARK,
+            {
+                transform: 'scale(0)'
+            },
+            {
+                transform: 'scale(1)'
+            }
+        );
 
-        let fadeCheckMarkStyles = Utils.buildStyles('::before', CHECK_MARK, {
-            'opacity': '0'
-        }, {
-            'opacity': '1'
-        });
+        let fadeCheckMarkStyles = Utils.buildStyles(
+            '::before',
+            CHECK_MARK,
+            {
+                opacity: '0'
+            },
+            {
+                opacity: '1'
+            }
+        );
 
         /* *** STYLESHEET STUFF *** */
         // Shove in the custom check mark
         if (options.checkMarkImage) {
-            Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': { 'background-image': 'url(\'' + options.checkMarkImage + '\')' } });
+            Utils.deepMerge(finalStyles, {
+                'span.imgCheckbox::before': { 'background-image': "url('" + options.checkMarkImage + "')" }
+            });
         }
 
         // Give the checkmark dimensions
         let chkDimensions = options.checkMarkSize.split(' ');
         Utils.deepMerge(finalStyles, {
             'span.imgCheckbox::before': {
-                'width': chkDimensions[0],
-                'height': chkDimensions[chkDimensions.length - 1]
+                width: chkDimensions[0],
+                height: chkDimensions[chkDimensions.length - 1]
             }
         });
 
@@ -103,8 +135,8 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
             let imgDimensions = options.fixedImageSize.split(' ');
             Utils.deepMerge(finalStyles, {
                 'span.imgCheckbox img': {
-                    'width': imgDimensions[0],
-                    'height': imgDimensions[imgDimensions.length - 1]
+                    width: imgDimensions[0],
+                    height: imgDimensions[imgDimensions.length - 1]
                 }
             });
         }
@@ -116,17 +148,20 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
             { doExtension: options.fadeCheckMark, style: fadeCheckMarkStyles }
         ];
 
-        conditionalExtend.forEach(extension => {
+        conditionalExtend.forEach((extension) => {
             if (extension.doExtension) {
                 Utils.deepMerge(finalStyles, extension.style);
             }
         });
 
-        Utils.deepMerge(defaultStyles, Utils.buildStyles('', CHECK_MARK, {
-            '': {'border-color': '#ccc'},
-            'img': {},
-            '::before': {}
-        }));
+        Utils.deepMerge(
+            defaultStyles,
+            Utils.buildStyles('', CHECK_MARK, {
+                '': { 'border-color': '#ccc' },
+                img: {},
+                '::before': {}
+            })
+        );
 
         finalStyles = Utils.deepMerge({}, defaultStyles, finalStyles, options.styles);
         // Now that we've built up our styles, inject them
@@ -153,12 +188,28 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
             // Set up select/deselect functions
             const methods = {
                 deselect: () => {
-                    Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
+                    Utils.changeSelection(
+                        wrapper,
+                        CHK_DESELECT,
+                        options.addToForm,
+                        options.radio,
+                        options.canDeselect,
+                        wrapperElements,
+                        ImgCheckBox.constants
+                    );
                     this.emit('deselect', wrapper);
                     this.emit('change', wrapper, false);
                 },
                 select: () => {
-                    Utils.changeSelection(wrapper, CHK_SELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
+                    Utils.changeSelection(
+                        wrapper,
+                        CHK_SELECT,
+                        options.addToForm,
+                        options.radio,
+                        options.canDeselect,
+                        wrapperElements,
+                        ImgCheckBox.constants
+                    );
                     this.emit('select', wrapper);
                     this.emit('change', wrapper, true);
                 }
@@ -176,14 +227,19 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
                 } else {
                     formElement = options.addToForm as HTMLFormElement;
                 }
-                let inputElemValue = options.inputValueAttribute ? element.getAttribute(options.inputValueAttribute) || '' : '';
+                let inputElemValue = options.inputValueAttribute
+                    ? element.getAttribute(options.inputValueAttribute) || ''
+                    : '';
                 if (formElement) {
                     let hiddenElementId = 'hEI' + id + '-' + index;
                     const parentElement = element.parentElement;
                     if (parentElement && 'dataset' in parentElement) {
                         parentElement.dataset.hiddenElementId = hiddenElementId;
                     }
-                    let imgName = (element as HTMLImageElement).getAttribute('name') || (element as HTMLImageElement).src.match(/\/([^\/]+)\.\w+$/)?.[1] || '';
+                    let imgName =
+                        (element as HTMLImageElement).getAttribute('name') ||
+                        (element as HTMLImageElement).src.match(/\/([^\/]+)\.\w+$/)?.[1] ||
+                        '';
                     let inputElem = document.createElement('input');
                     inputElem.type = 'checkbox';
                     inputElem.name = imgName;
@@ -199,19 +255,19 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
 
         // Preselect elements
         if (Array.isArray(this.options.preselect)) {
-            this.options.preselect.forEach(index => {
+            this.options.preselect.forEach((index) => {
                 if (index >= 0 && index < wrapperElements.length) {
                     this.imgChkMethods.get(wrapperElements[index])?.select();
                 }
             });
         } else if (this.options.preselect === true) {
-            wrapperElements.forEach(el => {
+            wrapperElements.forEach((el) => {
                 this.imgChkMethods.get(el)?.select();
             });
         }
 
         // Set up event handler
-        wrapperElements.forEach(el => {
+        wrapperElements.forEach((el) => {
             el.addEventListener('click', (e: MouseEvent) => {
                 const isShiftClick = options.enableShiftClick && !options.radio && e.shiftKey;
                 if (isShiftClick && lastClicked) {
@@ -226,7 +282,15 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
                         }
                     }
                 } else {
-                    const isSelected = Utils.changeSelection(el, CHK_TOGGLE, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
+                    const isSelected = Utils.changeSelection(
+                        el,
+                        CHK_TOGGLE,
+                        options.addToForm,
+                        options.radio,
+                        options.canDeselect,
+                        wrapperElements,
+                        ImgCheckBox.constants
+                    );
                     this.emit('click', el, isSelected);
                     if (isSelected) {
                         this.emit('select', el);
@@ -274,14 +338,14 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     }
 
     public selectAll(): void {
-        this.element.forEach(el => {
+        this.element.forEach((el) => {
             this.imgChkMethods.get(el)?.select();
         });
         this.emit('selectAll', this.element);
     }
 
     public deselectAll(): void {
-        this.element.forEach(el => {
+        this.element.forEach((el) => {
             this.imgChkMethods.get(el)?.deselect();
         });
         this.emit('deselectAll');
@@ -294,7 +358,7 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
             return;
         }
         Utils.removeStylesheet(id.toString());
-        this.element.forEach(element => {
+        this.element.forEach((element) => {
             let wrapper = element.parentNode as HTMLElement;
             if (wrapper && wrapper.classList.contains('imgCheckbox' + id)) {
                 wrapper.parentNode?.insertBefore(element, wrapper);
@@ -306,11 +370,11 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     }
 
     public getChecked(): HTMLElement[] {
-        return this.element.filter(el => el.parentElement?.classList.contains(CHECK_MARK));
+        return this.element.filter((el) => el.parentElement?.classList.contains(CHECK_MARK));
     }
 
     public getUnchecked(): HTMLElement[] {
-        return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
+        return this.element.filter((el) => !el.parentElement?.classList.contains(CHECK_MARK));
     }
 
     public get length(): number {
@@ -322,10 +386,10 @@ class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
             CHECK_MARK: CHECK_MARK,
             CHK_DESELECT: CHK_DESELECT,
             CHK_TOGGLE: CHK_TOGGLE,
-            CHK_SELECT: CHK_SELECT,
+            CHK_SELECT: CHK_SELECT
         };
     }
 }
 
 export { ImgCheckBox };
-export * from '../interface/interfaces';
+export * from '@/interface/interfaces';

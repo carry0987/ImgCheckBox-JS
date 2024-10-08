@@ -1,3 +1,112 @@
+const CHK_TOGGLE = 0;
+const CHK_SELECT = 1;
+const CHK_DESELECT = 2;
+const CHECK_MARK = 'imgChked';
+const CHECKMARK_POSITION = {
+    'top-left': {
+        top: '0.5%',
+        left: '0.5%'
+    },
+    top: {
+        top: '0.5%',
+        left: 0,
+        right: 0,
+        margin: 'auto'
+    },
+    'top-right': {
+        top: '0.5%',
+        right: '0.5%'
+    },
+    left: {
+        left: '0.5%',
+        bottom: 0,
+        top: 0,
+        margin: 'auto'
+    },
+    right: {
+        right: '0.5%',
+        bottom: 0,
+        top: 0,
+        margin: 'auto'
+    },
+    'bottom-left': {
+        bottom: '0.5%',
+        left: '0.5%'
+    },
+    bottom: {
+        bottom: '0.5%',
+        left: 0,
+        right: 0,
+        margin: 'auto'
+    },
+    'bottom-right': {
+        bottom: '0.5%',
+        right: '0.5%'
+    },
+    center: {
+        top: '0.5%',
+        bottom: '0.5%',
+        left: '0.5%',
+        right: '0.5%',
+        margin: 'auto'
+    }
+};
+const defaults = {
+    checkMarkImage: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMzQ2LjM4NCkiPjxwYXRoIGZpbGw9IiMxZWM4MWUiIGZpbGwtb3BhY2l0eT0iLjgiIGQ9Ik0zMiAzNDYuNGEzMiAzMiAwIDAgMC0zMiAzMiAzMiAzMiAwIDAgMCAzMiAzMiAzMiAzMiAwIDAgMCAzMi0zMiAzMiAzMiAwIDAgMC0zMi0zMnptMjEuMyAxMC4zbC0yNC41IDQxTDkuNSAzNzVsMTcuNyA5LjYgMjYtMjh6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTkuNSAzNzUuMmwxOS4zIDIyLjQgMjQuNS00MS0yNiAyOC4yeiIvPjwvZz48L3N2Zz4=',
+    enableShiftClick: true,
+    graySelected: true,
+    scaleSelected: true,
+    fixedImageSize: false,
+    checkMark: 'imgChked',
+    checkMarkSize: '30px',
+    checkMarkPosition: 'top-left',
+    scaleCheckMark: true,
+    fadeCheckMark: false,
+    addToForm: false,
+    inputValueAttribute: null,
+    preselect: [],
+    radio: false,
+    canDeselect: false,
+    styles: {},
+    debugMessages: false
+};
+const defaultStyles = {
+    'span.imgCheckbox': {
+        'user-select': 'none',
+        '-webkit-user-select': 'none',
+        /* Chrome all / Safari all */
+        '-moz-user-select': 'none',
+        /* Firefox all */
+        '-ms-user-select': 'none',
+        /* IE 10+ */
+        position: 'relative',
+        padding: '0',
+        margin: '2px',
+        display: 'inline-block',
+        border: '1px solid transparent',
+        'transition-duration': '300ms'
+    },
+    'span.imgCheckbox img': {
+        display: 'block',
+        margin: '0',
+        padding: '0',
+        'transition-duration': '300ms'
+    },
+    'span.imgCheckbox::before': {
+        display: 'block',
+        'background-size': '100% 100%',
+        content: "''",
+        color: 'white',
+        'font-weight': 'bold',
+        'border-radius': '50%',
+        position: 'absolute',
+        margin: '0.5%',
+        'z-index': '1',
+        'text-align': 'center',
+        'transition-duration': '300ms'
+    }
+};
+
 function throwError(message) {
     throw new Error(message);
 }
@@ -44,16 +153,30 @@ const replaceRule = {
     to: '.utils-'
 };
 function isObject(item) {
-    return typeof item === 'object' && item !== null && !Array.isArray(item);
+    return typeof item === 'object' && item !== null && !isArray(item);
 }
 function isArray(item) {
     return Array.isArray(item);
 }
-function isEmpty(str) {
-    if (typeof str === 'number') {
+function isEmpty(value) {
+    // Check for number
+    if (typeof value === 'number') {
         return false;
     }
-    return !str || (typeof str === 'string' && str.length === 0);
+    // Check for string
+    if (typeof value === 'string' && value.length === 0) {
+        return true;
+    }
+    // Check for array
+    if (isArray(value) && value.length === 0) {
+        return true;
+    }
+    // Check for object
+    if (isObject(value) && Object.keys(value).length === 0) {
+        return true;
+    }
+    // Check for any falsy values
+    return !value;
 }
 function deepMerge(target, ...sources) {
     if (!sources.length)
@@ -67,7 +190,7 @@ function deepMerge(target, ...sources) {
                 const targetKey = key;
                 if (isObject(value) || isArray(value)) {
                     if (!target[targetKey] || typeof target[targetKey] !== 'object') {
-                        target[targetKey] = Array.isArray(value) ? [] : {};
+                        target[targetKey] = isArray(value) ? [] : {};
                     }
                     deepMerge(target[targetKey], value);
                 }
@@ -136,8 +259,8 @@ class Utils {
     };
     static changeSelection(chosenElement, howToModify, addToForm, radio, canDeselect, wrapperElements, constants) {
         const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
-        if (radio && (howToModify !== CHK_DESELECT)) {
-            wrapperElements.forEach(wrapper => (wrapper !== chosenElement) && wrapper.classList.remove(CHECK_MARK));
+        if (radio && howToModify !== CHK_DESELECT) {
+            wrapperElements.forEach((wrapper) => wrapper !== chosenElement && wrapper.classList.remove(CHECK_MARK));
             canDeselect ? chosenElement.classList.toggle(CHECK_MARK) : chosenElement.classList.add(CHECK_MARK);
         }
         else {
@@ -152,16 +275,20 @@ class Utils {
         return currentIsSelected;
     }
     static updateFormValues(element, CHECK_MARK) {
-        let elements = (element instanceof Array) ? element : [element];
+        let elements = element instanceof Array ? element : [element];
         elements.forEach((el) => {
+            // Make sure el has dataset property
             if (!('dataset' in el))
                 return;
             const hiddenElements = Utils.getElem('.' + el.dataset.hiddenElementId, 'all');
+            // Check if hiddenElements is null
             if (hiddenElements) {
                 hiddenElements.forEach((hiddenElement) => {
+                    // Check if hiddenElement is HTMLElement
                     if (hiddenElement instanceof HTMLElement && hiddenElement.tagName.toLowerCase() === 'input') {
-                        const inputElement = hiddenElement;
+                        const inputElement = hiddenElement; // Type assertion to HTMLInputElement
                         inputElement.checked = el.classList.contains(CHECK_MARK);
+                        // Set attribute checked for hidden element
                         if (inputElement.checked) {
                             inputElement.setAttribute('checked', 'checked');
                         }
@@ -208,134 +335,65 @@ const reportInfo = (vars, showType = false) => {
     }
 };
 
-const CHK_TOGGLE = 0;
-const CHK_SELECT = 1;
-const CHK_DESELECT = 2;
-const CHECK_MARK = 'imgChked';
-const CHECKMARK_POSITION = {
-    'top-left': {
-        'top': '0.5%',
-        'left': '0.5%',
-    },
-    'top': {
-        'top': '0.5%',
-        'left': 0,
-        'right': 0,
-        'margin': 'auto',
-    },
-    'top-right': {
-        'top': '0.5%',
-        'right': '0.5%',
-    },
-    'left': {
-        'left': '0.5%',
-        'bottom': 0,
-        'top': 0,
-        'margin': 'auto',
-    },
-    'right': {
-        'right': '0.5%',
-        'bottom': 0,
-        'top': 0,
-        'margin': 'auto',
-    },
-    'bottom-left': {
-        'bottom': '0.5%',
-        'left': '0.5%',
-    },
-    'bottom': {
-        'bottom': '0.5%',
-        'left': 0,
-        'right': 0,
-        'margin': 'auto',
-    },
-    'bottom-right': {
-        'bottom': '0.5%',
-        'right': '0.5%',
-    },
-    'center': {
-        'top': '0.5%',
-        'bottom': '0.5%',
-        'left': '0.5%',
-        'right': '0.5%',
-        'margin': 'auto',
-    }
-};
-const defaults = {
-    checkMarkImage: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMzQ2LjM4NCkiPjxwYXRoIGZpbGw9IiMxZWM4MWUiIGZpbGwtb3BhY2l0eT0iLjgiIGQ9Ik0zMiAzNDYuNGEzMiAzMiAwIDAgMC0zMiAzMiAzMiAzMiAwIDAgMCAzMiAzMiAzMiAzMiAwIDAgMCAzMi0zMiAzMiAzMiAwIDAgMC0zMi0zMnptMjEuMyAxMC4zbC0yNC41IDQxTDkuNSAzNzVsMTcuNyA5LjYgMjYtMjh6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTkuNSAzNzUuMmwxOS4zIDIyLjQgMjQuNS00MS0yNiAyOC4yeiIvPjwvZz48L3N2Zz4=',
-    enableShiftClick: true,
-    graySelected: true,
-    scaleSelected: true,
-    fixedImageSize: false,
-    checkMark: 'imgChked',
-    checkMarkSize: '30px',
-    checkMarkPosition: 'top-left',
-    scaleCheckMark: true,
-    fadeCheckMark: false,
-    addToForm: false,
-    inputValueAttribute: null,
-    preselect: [],
-    radio: false,
-    canDeselect: false,
-    styles: {},
-    debugMessages: false,
-};
-const defaultStyles = {
-    'span.imgCheckbox': {
-        'user-select': 'none',
-        '-webkit-user-select': 'none',
-        '-moz-user-select': 'none',
-        '-ms-user-select': 'none',
-        'position': 'relative',
-        'padding': '0',
-        'margin': '2px',
-        'display': 'inline-block',
-        'border': '1px solid transparent',
-        'transition-duration': '300ms',
-    },
-    'span.imgCheckbox img': {
-        'display': 'block',
-        'margin': '0',
-        'padding': '0',
-        'transition-duration': '300ms',
-    },
-    'span.imgCheckbox::before': {
-        'display': 'block',
-        'background-size': '100% 100%',
-        'content': '\'\'',
-        'color': 'white',
-        'font-weight': 'bold',
-        'border-radius': '50%',
-        'position': 'absolute',
-        'margin': '0.5%',
-        'z-index': '1',
-        'text-align': 'center',
-        'transition-duration': '300ms',
-    }
-};
-
 class EventEmitter {
     // Initialize callbacks with an empty object
     callbacks = {};
+    /**
+     * Initializes the callbacks for a given event. If the event does not already have
+     * an entry in the callbacks object, a new empty array is created for it.
+     * @param event - The name of the event to initialize. If not provided, it checks
+     *                 for undefined events and initializes them if needed.
+     */
     init(event) {
         if (event && !this.callbacks[event]) {
             this.callbacks[event] = [];
         }
     }
+    /**
+     * Checks if a listener is a valid function. Throws a TypeError if the listener
+     * is not a function.
+     * @param listener - The listener to check. Should be a function that either returns void
+     *                   or a Promise that resolves to void.
+     */
     checkListener(listener) {
         if (typeof listener !== 'function') {
             throw new TypeError('The listener must be a function');
         }
     }
+    /**
+     * Checks whether a specific event has been registered within the emitter.
+     * @param event - The name of the event to check for existence.
+     * @returns A boolean indicating whether the event exists in the callbacks.
+     */
     hasEvent(event) {
         return this.callbacks[event] !== undefined;
     }
+    /**
+     * Retrieves all the listeners currently registered to the emitter.
+     * @returns An object containing all registered events and their associated listeners.
+     *          Each key is a string representing the event name, mapping to an array of
+     *          listener functions.
+     */
     listeners() {
         return this.callbacks;
     }
+    /**
+     * Adds a listener function for the specified event. This method is an alias for the
+     * `on` method, purely for semantic purposes.
+     * @param event - The name of the event to listen to.
+     * @param listener - The function to invoke when the event is emitted. Can be asynchronous.
+     * @returns The instance of the EventEmitter for method chaining.
+     */
     addListener(event, listener) {
         return this.on(event, listener);
     }
+    /**
+     * Clears all listeners for a specific event or, if no event is provided, clears all
+     * listeners for all events.
+     * @param event - Optional. The name of the event whose listeners should be cleared.
+     *                If omitted, all event listeners are cleared.
+     * @returns The instance of the EventEmitter for method chaining.
+     */
     clearListener(event) {
         if (event) {
             this.callbacks[event] = [];
@@ -345,40 +403,107 @@ class EventEmitter {
         }
         return this;
     }
+    /**
+     * Adds a listener for a specific event type. Initializes the event if it's not already
+     * present and ensures the listener is valid.
+     * @param event - The name of the event to listen to.
+     * @param listener - The function to call when the event is emitted. Can return a promise.
+     * @returns The instance of the EventEmitter for method chaining.
+     */
     on(event, listener) {
         this.checkListener(listener);
         this.init(event);
         this.callbacks[event].push(listener);
         return this;
     }
+    /**
+     * Removes a listener from a specific event. If no listener is provided, all listeners
+     * for the event are removed.
+     * @param event - The name of the event to remove a listener from.
+     * @param listener - Optional. The specific listener to remove. If not provided, all
+     *                   listeners for the event are removed.
+     * @returns The instance of the EventEmitter for method chaining.
+     */
     off(event, listener) {
-        this.checkListener(listener);
+        if (listener) {
+            this.checkListener(listener);
+        }
         const eventName = event;
         this.init();
         if (!this.callbacks[eventName] || this.callbacks[eventName].length === 0) {
             // There is no callbacks with this key
             return this;
         }
-        this.callbacks[eventName] = this.callbacks[eventName].filter((value) => value != listener);
+        if (listener) {
+            this.callbacks[eventName] = this.callbacks[eventName].filter((value) => value !== listener);
+        }
+        else {
+            // Remove all listeners if no specific listener is provided
+            this.callbacks[eventName] = [];
+        }
         return this;
     }
-    async emit(event, ...args) {
+    /**
+     * Emits an event, invoking all registered listeners for that event with the provided
+     * arguments. If any listener returns a promise, the method itself will return a promise
+     * that resolves when all listeners have been processed.
+     * @param event - The name of the event to emit.
+     * @param args - Arguments to pass to each listener when invoked.
+     * @returns A boolean or a promise resolving to a boolean indicating if listeners were
+     *          successfully called and resolved/ran without error.
+     */
+    emit(event, ...args) {
         const eventName = event;
         // Initialize the event
         this.init(eventName);
-        // If there are callbacks for this event
-        if (this.callbacks[eventName].length > 0) {
-            // Execute all callbacks and wait for them to complete if they are promises
-            await Promise.all(this.callbacks[eventName].map(async (value) => await value(...args)));
+        // If there are no callbacks, return false
+        if (this.callbacks[eventName].length <= 0) {
+            return false;
+        }
+        // Get all results
+        const results = this.callbacks[eventName].map(callback => {
+            try {
+                // Execute callback and capture the result
+                const result = callback(...args);
+                // If result is a promise, wrap it in Promise.resolve to handle uniformly
+                return result instanceof Promise ? result : Promise.resolve(result);
+            }
+            catch (e) {
+                console.error(`Error in event listener for event: ${eventName}`, e); // Logging error
+                // Even if an error occurs, continue processing other callbacks
+                return Promise.resolve();
+            }
+        });
+        // Check if any result is a promise
+        const hasPromise = results.some(result => result instanceof Promise);
+        // If there is at least one promise, return a promise that resolves when all promises resolve
+        if (hasPromise) {
+            return Promise.all(results).then(() => true).catch((e) => {
+                console.error(`Error handling promises for event: ${eventName}`, e); // Logging error
+                return false;
+            });
+        }
+        else {
+            // If no promises, return true
             return true;
         }
-        return false;
     }
+    /**
+     * Adds a listener for a specific event that will only be invoked once. After the first
+     * invocation, the listener will be automatically removed.
+     * @param event - The name of the event to listen to once.
+     * @param listener - The function to invoke once when the event is emitted.
+     * @returns The instance of the EventEmitter for method chaining.
+     */
     once(event, listener) {
         this.checkListener(listener);
-        const onceListener = async (...args) => {
-            await listener(...args);
+        const onceListener = (...args) => {
+            // Use a sync wrapper to ensure the listener is removed immediately after execution
+            const result = listener(...args);
+            // Remove the listener immediately
             this.off(event, onceListener);
+            // Handle async listeners by wrapping the result in Promise.resolve
+            return result instanceof Promise ? result : Promise.resolve(result);
         };
         return this.on(event, onceListener);
     }
@@ -386,7 +511,7 @@ class EventEmitter {
 
 class ImgCheckBox extends EventEmitter {
     static instances = [];
-    static version = '3.0.2';
+    static version = '3.0.3';
     element = [];
     options = defaults;
     targetIndex = 0;
@@ -400,62 +525,82 @@ class ImgCheckBox extends EventEmitter {
         }
         return this;
     }
+    /**
+     * Initialization
+     */
     initialize(element, option) {
         let elems = Utils.getElem(element, 'all');
         if (!elems)
             Utils.throwError('Element not found');
-        this.element = Array.isArray(elems) ? elems : (elems instanceof NodeList ? Array.from(elems) : [elems]);
+        this.element = Array.isArray(elems)
+            ? elems
+            : (elems instanceof NodeList ? Array.from(elems) : [elems]);
         if (this.element.length === 0)
             Utils.throwError('Element not found');
+        // Replace default options with user defined options
         this.options = Utils.deepMerge({}, defaults, option || {});
+        // Create the imgCheckbox
         this.createImgCheckbox(ImgCheckBox.instances.length);
     }
+    /**
+     * Main function for creating the imgCheckbox
+     */
     createImgCheckbox(id) {
         const elements = this.element;
         const options = this.options;
         let lastClicked = null;
+        // Define the finalStyles object that will be aggregated and used later
         let finalStyles = {};
+        // Define wrapper elements array
         let wrapperElements = [];
+        // Generate grayscale styles if enabled
         let grayscaleStyles = Utils.buildStyles('img', CHECK_MARK, {
-            'transform': 'scale(1)',
-            'filter': 'none',
+            transform: 'scale(1)',
+            filter: 'none',
             '-webkit-filter': 'grayscale(0)'
         }, {
-            'filter': 'grayscale(1)',
+            filter: 'grayscale(1)',
             '-webkit-filter': 'grayscale(1)'
         });
         let scaleStyles = Utils.buildStyles('img', CHECK_MARK, {
-            'transform': 'scale(1)'
+            transform: 'scale(1)'
         }, {
-            'transform': 'scale(0.9)'
+            transform: 'scale(0.9)'
         });
         let scaleCheckMarkStyles = Utils.buildStyles('::before', CHECK_MARK, {
-            'transform': 'scale(0)'
+            transform: 'scale(0)'
         }, {
-            'transform': 'scale(1)'
+            transform: 'scale(1)'
         });
         let fadeCheckMarkStyles = Utils.buildStyles('::before', CHECK_MARK, {
-            'opacity': '0'
+            opacity: '0'
         }, {
-            'opacity': '1'
+            opacity: '1'
         });
+        /* *** STYLESHEET STUFF *** */
+        // Shove in the custom check mark
         if (options.checkMarkImage) {
-            Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': { 'background-image': 'url(\'' + options.checkMarkImage + '\')' } });
+            Utils.deepMerge(finalStyles, {
+                'span.imgCheckbox::before': { 'background-image': "url('" + options.checkMarkImage + "')" }
+            });
         }
+        // Give the checkmark dimensions
         let chkDimensions = options.checkMarkSize.split(' ');
         Utils.deepMerge(finalStyles, {
             'span.imgCheckbox::before': {
-                'width': chkDimensions[0],
-                'height': chkDimensions[chkDimensions.length - 1]
+                width: chkDimensions[0],
+                height: chkDimensions[chkDimensions.length - 1]
             }
         });
+        // Give the checkmark a position
         Utils.deepMerge(finalStyles, { 'span.imgCheckbox::before': CHECKMARK_POSITION[options.checkMarkPosition] });
+        // Fixed image sizes
         if (options.fixedImageSize && typeof options.fixedImageSize === 'string') {
             let imgDimensions = options.fixedImageSize.split(' ');
             Utils.deepMerge(finalStyles, {
                 'span.imgCheckbox img': {
-                    'width': imgDimensions[0],
-                    'height': imgDimensions[imgDimensions.length - 1]
+                    width: imgDimensions[0],
+                    height: imgDimensions[imgDimensions.length - 1]
                 }
             });
         }
@@ -465,30 +610,37 @@ class ImgCheckBox extends EventEmitter {
             { doExtension: options.scaleCheckMark, style: scaleCheckMarkStyles },
             { doExtension: options.fadeCheckMark, style: fadeCheckMarkStyles }
         ];
-        conditionalExtend.forEach(extension => {
+        conditionalExtend.forEach((extension) => {
             if (extension.doExtension) {
                 Utils.deepMerge(finalStyles, extension.style);
             }
         });
         Utils.deepMerge(defaultStyles, Utils.buildStyles('', CHECK_MARK, {
             '': { 'border-color': '#ccc' },
-            'img': {},
+            img: {},
             '::before': {}
         }));
         finalStyles = Utils.deepMerge({}, defaultStyles, finalStyles, options.styles);
+        // Now that we've built up our styles, inject them
         Utils.injectStylesheet(finalStyles, id.toString());
+        // Loop through each element
         for (let index = 0; index < elements.length; index++) {
             let element = elements[index];
+            // If the element is already an imgCheckbox, skip it
             if (element.parentNode?.classList.contains('imgCheckbox' + id))
                 continue;
+            // If the element is not an image, skip it
             if (element.tagName.toLowerCase() !== 'img')
                 continue;
+            // Set img undraggable
             element.ondragstart = () => false;
+            /* *** DOM STUFF *** */
             let wrapper = document.createElement('span');
             wrapper.className = 'imgCheckbox' + id;
             element.parentNode?.insertBefore(wrapper, element);
             wrapper.appendChild(element);
             wrapperElements.push(wrapper);
+            // Set up select/deselect functions
             const methods = {
                 deselect: () => {
                     Utils.changeSelection(wrapper, CHK_DESELECT, options.addToForm, options.radio, options.canDeselect, wrapperElements, ImgCheckBox.constants);
@@ -505,6 +657,7 @@ class ImgCheckBox extends EventEmitter {
             if (wrapper.firstChild && wrapper.firstChild instanceof HTMLElement) {
                 this.imgChkMethods.set(wrapper.firstChild, methods);
             }
+            // Inject into form if necessary
             if (options.addToForm instanceof Element || options.addToForm === true) {
                 let formElement = null;
                 if (options.addToForm === true) {
@@ -513,14 +666,18 @@ class ImgCheckBox extends EventEmitter {
                 else {
                     formElement = options.addToForm;
                 }
-                let inputElemValue = options.inputValueAttribute ? element.getAttribute(options.inputValueAttribute) || '' : '';
+                let inputElemValue = options.inputValueAttribute
+                    ? element.getAttribute(options.inputValueAttribute) || ''
+                    : '';
                 if (formElement) {
                     let hiddenElementId = 'hEI' + id + '-' + index;
                     const parentElement = element.parentElement;
                     if (parentElement && 'dataset' in parentElement) {
                         parentElement.dataset.hiddenElementId = hiddenElementId;
                     }
-                    let imgName = element.getAttribute('name') || element.src.match(/\/([^\/]+)\.\w+$/)?.[1] || '';
+                    let imgName = element.getAttribute('name') ||
+                        element.src.match(/\/([^\/]+)\.\w+$/)?.[1] ||
+                        '';
                     let inputElem = document.createElement('input');
                     inputElem.type = 'checkbox';
                     inputElem.name = imgName;
@@ -534,19 +691,21 @@ class ImgCheckBox extends EventEmitter {
                 }
             }
         }
+        // Preselect elements
         if (Array.isArray(this.options.preselect)) {
-            this.options.preselect.forEach(index => {
+            this.options.preselect.forEach((index) => {
                 if (index >= 0 && index < wrapperElements.length) {
                     this.imgChkMethods.get(wrapperElements[index])?.select();
                 }
             });
         }
         else if (this.options.preselect === true) {
-            wrapperElements.forEach(el => {
+            wrapperElements.forEach((el) => {
                 this.imgChkMethods.get(el)?.select();
             });
         }
-        wrapperElements.forEach(el => {
+        // Set up event handler
+        wrapperElements.forEach((el) => {
             el.addEventListener('click', (e) => {
                 const isShiftClick = options.enableShiftClick && !options.radio && e.shiftKey;
                 if (isShiftClick && lastClicked) {
@@ -607,13 +766,13 @@ class ImgCheckBox extends EventEmitter {
         this.imgChkMethods.get(this.element[index])?.deselect();
     }
     selectAll() {
-        this.element.forEach(el => {
+        this.element.forEach((el) => {
             this.imgChkMethods.get(el)?.select();
         });
         this.emit('selectAll', this.element);
     }
     deselectAll() {
-        this.element.forEach(el => {
+        this.element.forEach((el) => {
             this.imgChkMethods.get(el)?.deselect();
         });
         this.emit('deselectAll');
@@ -625,7 +784,7 @@ class ImgCheckBox extends EventEmitter {
             return;
         }
         Utils.removeStylesheet(id.toString());
-        this.element.forEach(element => {
+        this.element.forEach((element) => {
             let wrapper = element.parentNode;
             if (wrapper && wrapper.classList.contains('imgCheckbox' + id)) {
                 wrapper.parentNode?.insertBefore(element, wrapper);
@@ -636,10 +795,10 @@ class ImgCheckBox extends EventEmitter {
         ImgCheckBox.instances.splice(id, 1);
     }
     getChecked() {
-        return this.element.filter(el => el.parentElement?.classList.contains(CHECK_MARK));
+        return this.element.filter((el) => el.parentElement?.classList.contains(CHECK_MARK));
     }
     getUnchecked() {
-        return this.element.filter(el => !el.parentElement?.classList.contains(CHECK_MARK));
+        return this.element.filter((el) => !el.parentElement?.classList.contains(CHECK_MARK));
     }
     get length() {
         return this.element.length;
@@ -649,7 +808,7 @@ class ImgCheckBox extends EventEmitter {
             CHECK_MARK: CHECK_MARK,
             CHK_DESELECT: CHK_DESELECT,
             CHK_TOGGLE: CHK_TOGGLE,
-            CHK_SELECT: CHK_SELECT,
+            CHK_SELECT: CHK_SELECT
         };
     }
 }

@@ -1,5 +1,14 @@
 import { EventEmitter } from '@carry0987/event-emitter';
 
+interface ImgCheckBoxEvents {
+    click: (element: HTMLElement, isSelected?: boolean) => void;
+    change: (element: HTMLElement, isSelected?: boolean) => void;
+    select: (element: HTMLElement) => void;
+    deselect: (element: HTMLElement) => void;
+    selectAll: (elements: HTMLElement[]) => void;
+    deselectAll: () => void;
+}
+
 interface ImgCheckBoxOptions {
     checkMarkImage: string;
     enableShiftClick: boolean;
@@ -29,15 +38,6 @@ interface CheckmarkPositionStyles {
     };
 }
 
-interface ImgCheckBoxEvents {
-    click: (element: HTMLElement, isSelected?: boolean) => void;
-    change: (element: HTMLElement, isSelected?: boolean) => void;
-    select: (element: HTMLElement) => void;
-    deselect: (element: HTMLElement) => void;
-    selectAll: (elements: HTMLElement[]) => void;
-    deselectAll: () => void;
-}
-
 declare class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private static instances;
     private static version;
@@ -46,7 +46,13 @@ declare class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private targetIndex;
     private imgChkMethods;
     constructor(element: string, option?: Partial<ImgCheckBoxOptions>);
+    /**
+     * Initialization
+     */
     private initialize;
+    /**
+     * Main function for creating the imgCheckbox
+     */
     private createImgCheckbox;
     target(index: number): ImgCheckBox | void;
     state(): boolean;

@@ -20,12 +20,12 @@ export interface ImgCheckBoxOptions {
 
 export interface CheckmarkPositionStyles {
     [position: string]: {
-        top?: string | number,
-        left?: string | number,
-        right?: string | number,
-        bottom?: string | number,
-        margin?: string | number
-    }
+        top?: string | number;
+        left?: string | number;
+        right?: string | number;
+        bottom?: string | number;
+        margin?: string | number;
+    };
 }
 
 export interface ConstantsType {

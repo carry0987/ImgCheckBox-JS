@@ -8,7 +8,7 @@ import {
     getElem as _getElem
 } from '@carry0987/utils';
 
-import { ConstantsType, StylesObject } from '../interface/interfaces';
+import { ConstantsType, StylesObject } from '@/interface/interfaces';
 
 class Utils {
     static deepMerge = _deepMerge;
@@ -20,7 +20,7 @@ class Utils {
 
     static throwError = (msg: string): void => {
         _throwError('[ImgCheckBox]: ' + msg);
-    }
+    };
 
     static changeSelection(
         chosenElement: HTMLElement,
@@ -32,13 +32,13 @@ class Utils {
         constants: ConstantsType
     ): boolean {
         const { CHECK_MARK, CHK_DESELECT, CHK_TOGGLE, CHK_SELECT } = constants;
-        if (radio && (howToModify !== CHK_DESELECT)) {
-            wrapperElements.forEach(wrapper => (wrapper !== chosenElement) && wrapper.classList.remove(CHECK_MARK));
+        if (radio && howToModify !== CHK_DESELECT) {
+            wrapperElements.forEach((wrapper) => wrapper !== chosenElement && wrapper.classList.remove(CHECK_MARK));
             canDeselect ? chosenElement.classList.toggle(CHECK_MARK) : chosenElement.classList.add(CHECK_MARK);
         } else {
             (howToModify === CHK_DESELECT && chosenElement.classList.remove(CHECK_MARK)) ||
-            (howToModify === CHK_TOGGLE && chosenElement.classList.toggle(CHECK_MARK)) ||
-            (howToModify === CHK_SELECT && chosenElement.classList.add(CHECK_MARK));
+                (howToModify === CHK_TOGGLE && chosenElement.classList.toggle(CHECK_MARK)) ||
+                (howToModify === CHK_SELECT && chosenElement.classList.add(CHECK_MARK));
         }
         const currentIsSelected = chosenElement.classList.contains(CHECK_MARK);
         if (addToForm) {
@@ -48,11 +48,8 @@ class Utils {
         return currentIsSelected;
     }
 
-    static updateFormValues(
-        element: HTMLElement | Array<HTMLElement>,
-        CHECK_MARK: string
-    ): void {
-        let elements = (element instanceof Array) ? element : [element];
+    static updateFormValues(element: HTMLElement | Array<HTMLElement>, CHECK_MARK: string): void {
+        let elements = element instanceof Array ? element : [element];
         elements.forEach((el) => {
             // Make sure el has dataset property
             if (!('dataset' in el)) return;
@@ -83,11 +80,7 @@ class Utils {
         checkedStyle?: StylesObject
     ): Record<string, StylesObject> {
         let styles: Record<string, StylesObject> = {};
-        const arrayBuilder = (
-            selector: string,
-            styleValues: StylesObject,
-            checked = false
-        ): void => {
+        const arrayBuilder = (selector: string, styleValues: StylesObject, checked = false): void => {
             let space = selector.startsWith('::') ? '' : ' ';
             if (!selector) space = '.' + checkedSelector;
             styles[`span.imgCheckbox${checked ? '.' + checkedSelector : ''}${space}${selector}`] = styleValues;
