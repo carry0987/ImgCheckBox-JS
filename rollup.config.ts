@@ -19,7 +19,7 @@ const jsConfig: RollupOptions = {
         {
             file: pkg.exports['.']['umd'],
             format: 'umd',
-            name: 'ImgCheckBox',
+            name: 'imgCheckBoxjs',
             plugins: isProduction ? [terser()] : []
         },
         {

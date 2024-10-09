@@ -57,7 +57,7 @@
     <script src="dist/imgCheckBox.min.js"></script>
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
-        const imgCheckBox = new ImgCheckBox('#imgList img', {
+        const imgCheckBox = new imgCheckBoxjs.ImgCheckBox('#imgList img', {
             graySelected: false,
             scaleSelected: true,
             checkMarkPosition: 'center',
@@ -81,7 +81,7 @@
         });
         imgCheckBox.selectAll();
 
-        const imgCheckBoxForm = new ImgCheckBox('#imgCheckBoxForm img', {
+        const imgCheckBoxForm = new imgCheckBoxjs.ImgCheckBox('#imgCheckBoxForm img', {
             scaleSelected: true,
             checkMarkPosition: 'center',
             checkMarkSize: '50px',

@@ -1,5 +1,6 @@
 # ImgCheckBox-JS
-[![version](https://img.shields.io/npm/v/@carry0987/imgcheckbox.svg)](https://www.npmjs.com/package/@carry0987/imgcheckbox)  
+[![version](https://img.shields.io/npm/v/@carry0987/imgcheckbox.svg)](https://www.npmjs.com/package/@carry0987/imgcheckbox)
+![CI](https://github.com/carry0987/ImgCheckBox-JS/actions/workflows/ci.yml/badge.svg)  
 Seamlessly transform your images into interactive checkboxes with **ImgCheckBox**, a versatile and easy-to-use JavaScript library designed to enhance user interfaces by introducing customizable image-based selection functionality.
 
 ## Description
@@ -11,6 +12,9 @@ pnpm i @carry0987/imgcheckbox
 ```
 
 ## Usage
+Here is a simple example of how to use **ImgCheckBox** in your project.
+
+#### UMD
 ```html
 <div>
     <div id="imgList">
@@ -28,7 +32,7 @@ pnpm i @carry0987/imgcheckbox
 <script src="dist/imgCheckBox.min.js"></script>
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
-    const imgCheckBox = new ImgCheckBox('#imgList img', {
+    const imgCheckBox = new imgCheckBoxjs.ImgCheckBox('#imgList img', {
         graySelected: false,
         scaleSelected: true,
         checkMarkPosition: 'center',
@@ -44,4 +48,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+```
+
+#### ES6
+```ts
+import { ImgCheckBox } from '@carry0987/imgcheckbox';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const imgCheckBox = new ImgCheckBox('#imgList img', {
+        //...
+    });
+    imgCheckBox.on('change', (el, checked) => {
+        console.log(el);
+    });
+});
 ```

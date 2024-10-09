@@ -511,7 +511,7 @@ class EventEmitter {
 
 class ImgCheckBox extends EventEmitter {
     static instances = [];
-    static version = '3.0.4';
+    static version = '3.1.0';
     element = [];
     options = defaults;
     targetIndex = 0;
@@ -813,4 +813,4 @@ class ImgCheckBox extends EventEmitter {
     }
 }
 
-export { ImgCheckBox as default };
+export { ImgCheckBox };
