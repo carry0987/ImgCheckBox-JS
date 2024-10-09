@@ -1,6 +1,6 @@
 {
   "name": "@carry0987/imgcheckbox",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "A library for create checkable img tags",
   "type": "module",
   "main": "dist/imgCheckBox.min.js",
@@ -48,7 +48,6 @@
     "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-tsconfig-paths": "^1.5.2",
-    "tslib": "^2.7.0",
-    "typescript": "^5.6.2"
+    "tslib": "^2.7.0"
   }
 }
