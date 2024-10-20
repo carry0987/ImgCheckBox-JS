@@ -5,7 +5,6 @@ import replace from '@rollup/plugin-replace';
 import tsConfigPaths from 'rollup-plugin-tsconfig-paths';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import { dts } from 'rollup-plugin-dts';
-import del from 'rollup-plugin-delete';
 import { createRequire } from 'module';
 
 const pkg = createRequire(import.meta.url)('./package.json');
@@ -47,8 +46,7 @@ const dtsConfig: RollupOptions = {
     },
     plugins: [
         tsConfigPaths(),
-        dts(),
-        del({ hook: 'buildEnd', targets: ['dist/dts'] })
+        dts()
     ]
 };
 
