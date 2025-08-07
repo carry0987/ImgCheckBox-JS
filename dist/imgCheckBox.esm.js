@@ -461,7 +461,7 @@ class EventEmitter {
             return false;
         }
         // Get all results
-        const results = this.callbacks[eventName].map(callback => {
+        const results = this.callbacks[eventName].map((callback) => {
             try {
                 // Execute callback and capture the result
                 const result = callback(...args);
@@ -475,10 +475,12 @@ class EventEmitter {
             }
         });
         // Check if any result is a promise
-        const hasPromise = results.some(result => result instanceof Promise);
+        const hasPromise = results.some((result) => result instanceof Promise);
         // If there is at least one promise, return a promise that resolves when all promises resolve
         if (hasPromise) {
-            return Promise.all(results).then(() => true).catch((e) => {
+            return Promise.all(results)
+                .then(() => true)
+                .catch((e) => {
                 console.error(`Error handling promises for event: ${eventName}`, e); // Logging error
                 return false;
             });
@@ -511,7 +513,7 @@ class EventEmitter {
 
 class ImgCheckBox extends EventEmitter {
     static instances = [];
-    static version = '3.1.1';
+    static version = '3.1.2';
     element = [];
     options = defaults;
     targetIndex = 0;

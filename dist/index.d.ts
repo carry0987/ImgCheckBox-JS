@@ -67,4 +67,5 @@ declare class ImgCheckBox extends EventEmitter<ImgCheckBoxEvents> {
     private static get constants();
 }
 
-export { type CheckmarkPositionStyles, ImgCheckBox, type ImgCheckBoxOptions };
+export { ImgCheckBox };
+export type { CheckmarkPositionStyles, ImgCheckBoxOptions };
